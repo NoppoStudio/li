@@ -18,6 +18,9 @@
             --text-dim: #5f6368;
             --border: #dadce0;
             --font-main: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
+            /* LiquidGlass Accent */
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(26, 115, 232, 0.2);
         }
 
         body {
@@ -28,16 +31,26 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* LiquidGlass Visuals */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .noppo-card {
             background: #ffffff;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
             transition: box-shadow 0.2s, border-color 0.2s;
         }
 
         .noppo-card:hover {
-            box-shadow: 0 1px 6px rgba(32,33,36,0.15);
-            border-color: #bdc1c6;
+            box-shadow: 0 4px 12px rgba(32,33,36,0.08);
+            border-color: var(--primary);
         }
 
         .loading-screen {
@@ -45,36 +58,28 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        .input-focus-group:focus-within {
-            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-            border-color: transparent;
-        }
-
-        .btn-google {
+        .btn-primary {
             background-color: var(--primary);
             color: white;
-            transition: background-color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(26, 115, 232, 0.2);
         }
 
-        .btn-google:hover {
+        .btn-primary:hover {
             background-color: #1765cc;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-        }
-
-        .btn-google:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(26, 115, 232, 0.3);
         }
 
         #toast {
-            position: fixed; bottom: 24px; left: 24px;
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(100px);
             background: #323336; color: white;
-            padding: 12px 24px; border-radius: 4px;
+            padding: 12px 24px; border-radius: 8px;
             font-size: 14px; z-index: 2000;
-            display: none; transform: translateY(100px);
-            transition: transform 0.3s ease;
+            opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        #toast.show { display: block; transform: translateY(0); }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -83,39 +88,51 @@
         <div class="animate-spin rounded-full h-8 w-8 border-3 border-blue-600 border-t-transparent"></div>
     </div>
 
-    <header class="h-16 border-b border-slate-200 px-6 flex items-center justify-between bg-white sticky top-0 z-50">
+    <header class="h-16 border-b border-slate-200 px-6 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center shadow-sm">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
                 <i data-lucide="link" class="text-white w-4 h-4"></i>
             </div>
             <h1 class="font-bold text-xl tracking-tight text-slate-800">NoppoLI</h1>
         </div>
-        <div id="user-profile" class="flex items-center gap-4"></div>
+        <div id="auth-section" class="flex items-center gap-4">
+            <button id="login-btn" onclick="login()" class="hidden text-sm font-bold text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-full border border-blue-200 transition-all">サインイン</button>
+            <div id="user-info" class="hidden items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-xs font-bold text-slate-800"></p>
+                </div>
+                <img id="user-avatar" class="w-8 h-8 rounded-full border border-slate-200 shadow-sm" alt="User Avatar">
+                <button onclick="logout()" class="text-slate-400 hover:text-rose-500 transition-colors">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
     </header>
 
     <main class="flex-1 max-w-4xl mx-auto w-full p-6 space-y-10">
-        <section class="mt-12 text-center">
-            <h2 class="text-3xl font-bold mb-8 text-slate-900 tracking-tight">URLを短く、スマートに。</h2>
+        <section class="mt-16 text-center">
+            <h2 class="text-4xl font-extrabold mb-4 text-slate-900 tracking-tight">URLを短く、スマートに。</h2>
+            <p class="text-slate-500 mb-10">linp.f5.si であなたのリンクを美しく。 [cite: 1]</p>
             
-            <div class="max-w-2xl mx-auto space-y-2">
-                <div class="noppo-card p-2 flex flex-col md:flex-row gap-2 items-center input-focus-group transition-all overflow-hidden shadow-sm">
+            <div class="max-w-2xl mx-auto glass-panel p-2 shadow-xl">
+                <div class="flex flex-col md:flex-row gap-2 items-center overflow-hidden">
                     <div class="flex-1 w-full relative">
-                        <input type="text" id="long-url" placeholder="長いURLを貼り付けて短縮" class="w-full px-6 py-4 outline-none text-base">
+                        <input type="text" id="long-url" placeholder="長いURLを貼り付けて短縮" class="w-full px-6 py-4 bg-transparent outline-none text-base">
                     </div>
-                    <button id="submit-btn" onclick="createShortLink()" class="btn-google w-full md:w-auto px-10 py-4 rounded-md font-bold text-sm tracking-wide whitespace-nowrap">
-                        短縮
+                    <button id="submit-btn" onclick="createShortLink()" class="btn-primary w-full md:w-auto px-10 py-4 rounded-xl font-bold text-sm tracking-wide whitespace-nowrap">
+                        短縮する
                     </button>
-                </div>
-                
-                <div id="custom-id-container" class="hidden animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div class="flex items-center gap-2 px-4 py-2 bg-white border border-dashed border-slate-300 rounded-lg">
-                        <span class="text-xs font-bold text-slate-400">li.noppo.f5.si/?i=</span>
-                        <input type="text" id="custom-short-id" placeholder="好きなID（任意）" class="flex-1 bg-transparent outline-none text-sm text-blue-600 font-bold" maxlength="20">
-                    </div>
                 </div>
             </div>
 
-            <p id="guest-notice" class="text-[11px] text-slate-400 mt-4 hidden">
+            <div id="custom-id-container" class="hidden mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-dashed border-slate-300 rounded-lg mx-auto">
+                    <span class="text-xs font-bold text-slate-400">linp.f5.si/?i=</span>
+                    <input type="text" id="custom-short-id" placeholder="好きなID（任意）" class="bg-transparent outline-none text-sm text-blue-600 font-bold" maxlength="20">
+                </div>
+            </div>
+
+            <p id="guest-notice" class="text-[11px] text-slate-400 mt-6 hidden">
                 <i data-lucide="info" class="w-3 h-3 inline mr-1"></i> ログインなしでの作成は、1ヶ月後に自動消去されます。
             </p>
         </section>
@@ -127,35 +144,27 @@
                 </h3>
                 <div id="stats-summary" class="text-xs font-medium text-slate-500 bg-white border border-slate-200 px-3 py-1 rounded-full"></div>
             </div>
-            
             <div id="links-list" class="grid gap-4"></div>
         </section>
     </main>
 
     <div id="detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[1000]">
-        <div class="bg-white w-full max-w-md rounded-xl p-8 shadow-2xl border border-slate-200">
+        <div class="bg-white w-full max-w-md rounded-2xl p-8 shadow-2xl border border-slate-200 scale-95 transition-transform duration-300">
             <div class="flex justify-between items-start mb-6">
-                <div>
-                    <h3 class="font-bold text-xl text-slate-900">作成完了</h3>
-                </div>
+                <h3 class="font-bold text-xl text-slate-900">作成完了！</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            
             <div class="space-y-6">
-                <div class="p-6 bg-blue-50/50 border border-blue-100 rounded-xl text-center group cursor-pointer" onclick="copyToClipboard()">
+                <div class="p-6 bg-blue-50 border border-blue-100 rounded-xl text-center group cursor-pointer" onclick="copyToClipboard()">
                     <p id="result-short-url" class="text-2xl font-bold text-blue-700 break-all select-all"></p>
-                    <div class="flex items-center justify-center gap-2 mt-3 text-blue-400">
+                    <div class="flex items-center justify-center gap-2 mt-3 text-blue-400 group-hover:text-blue-600">
                         <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                         <span class="text-[10px] font-bold uppercase tracking-widest">クリックしてコピー</span>
                     </div>
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="copyToClipboard()" class="flex-1 btn-google py-3.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2">
-                        コピー
-                    </button>
-                    <button onclick="downloadQR()" class="flex-1 border border-slate-300 py-3.5 rounded-lg font-bold text-sm text-slate-700 flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors">
-                        QRコード
-                    </button>
+                    <button onclick="copyToClipboard()" class="flex-1 btn-primary py-4 rounded-xl font-bold text-sm">コピー</button>
+                    <button onclick="downloadQR()" class="flex-1 border border-slate-300 py-4 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-50 transition-colors">QRコード</button>
                 </div>
             </div>
         </div>
@@ -165,12 +174,12 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 
     <script>
-        const AUTH_WORKER_URL = "https://noppo-auth.noppo5319.workers.dev";
+        // NoppoAuth 2026 決定版 設定 [cite: 1]
+        const AUTH_URL = "https://noppo-auth.noppo5319.workers.dev";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YXZhc3JkeGd1cWtpaWdjeGtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0MTk5ODcsImV4cCI6MjA4Mjk5NTk4N30.CVq3lyRbxek7Ejs4tP5sN9-0JNEXSLtCsC2Pj-skFFQ";
-        const SITE_DOMAIN = "https://li.noppo.f5.si"; // 指定されたドメイン
+        const SITE_DOMAIN = "https://linp.f5.si"; 
         
         const firebaseConfig = {
             apiKey: "AIzaSyB2HcI-TwH88QDADp-Z5cUFRCsaVO2VMw0",
@@ -181,72 +190,94 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
         const APP_ID = "noppo_li_v2";
 
-        let me = { uid: null, isGuest: true }; 
-        let links = [];
+        let currentUser = null;
+
+        // NoppoAuth: ステップ1 ログイン [cite: 2]
+        function login() {
+            const currentUrl = encodeURIComponent(window.location.href);
+            window.location.href = `${AUTH_URL}?redirect=${currentUrl}`; [cite: 2]
+        }
+
+        // NoppoAuth: ステップ2 ユーザー情報取得 [cite: 3]
+        async function checkAuth() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const ticket = urlParams.get('ticket'); [cite: 3]
+
+            if (ticket) {
+                try {
+                    const res = await fetch(`${AUTH_URL}/auth/v1/user?ticket=${ticket}`, {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_KEY, // CORSエラー回避 [cite: 4]
+                            'Content-Type': 'application/json' [cite: 5]
+                        }
+                    });
+
+                    if (res.ok) {
+                        const user = await res.json(); [cite: 6]
+                        // URLを綺麗にする [cite: 7]
+                        const cleanUrl = window.location.origin + window.location.pathname;
+                        window.history.replaceState({}, document.title, cleanUrl); [cite: 8]
+                        return user; 
+                    }
+                } catch (e) {
+                    console.error("認証エラー:", e); [cite: 8]
+                }
+            }
+            return null; [cite: 9]
+        }
+
+        // NoppoAuth: ステップ3 ログアウト [cite: 10]
+        function logout() {
+            localStorage.removeItem('noppo_li_user');
+            const homeUrl = encodeURIComponent(window.location.origin);
+            window.location.href = `${AUTH_URL}/logout?redirect=${homeUrl}`; [cite: 10]
+        }
 
         async function init() {
             if (await handleRedirect()) return;
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const ticket = urlParams.get('ticket');
-            
-            if (ticket) {
-                try {
-                    const res = await fetch(`${AUTH_WORKER_URL}/auth/v1/user?ticket=${ticket}`, { headers: { "apikey": SUPABASE_KEY } });
-                    if (res.ok) {
-                        const data = await res.json();
-                        me = { uid: data.id, name: data.user_metadata.display_name, avatar: data.user_metadata.avatar_url, isGuest: false };
-                        localStorage.setItem('noppo_user', JSON.stringify(me));
-                        window.history.replaceState({}, "", window.location.pathname);
-                    }
-                } catch (e) { console.error(e); }
-            } else {
-                const saved = localStorage.getItem('noppo_user');
-                if (saved) me = JSON.parse(saved);
-            }
+            // 認証チェック
+            const user = await checkAuth(); [cite: 11]
+            const loginBtn = document.getElementById('login-btn'); [cite: 12]
+            const userInfo = document.getElementById('user-info');
 
-            if (me.isGuest && !me.uid) {
-                const guestId = localStorage.getItem('noppo_li_guest_id') || ('guest_' + Math.random().toString(36).substring(2, 10));
-                localStorage.setItem('noppo_li_guest_id', guestId);
-                me = { uid: guestId, name: 'ゲスト', isGuest: true };
-            }
-
-            try {
-                if (!auth.currentUser) await auth.signInAnonymously();
-            } catch(e) { console.error("Auth failed", e); }
-            
-            document.getElementById('loader').classList.add('hidden');
-            renderUser();
-            listenLinks();
-            
-            if (me.isGuest) {
-                document.getElementById('guest-notice').classList.remove('hidden');
-            } else {
+            if (user) {
+                currentUser = { 
+                    uid: user.id || user.userId, 
+                    name: user.user_metadata?.display_name || user.userId || "名無しさん", [cite: 12, 13]
+                    avatar: user.user_metadata?.avatar_url || user.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}`, [cite: 13]
+                    isGuest: false 
+                };
+                localStorage.setItem('noppo_li_user', JSON.stringify(currentUser));
+                
+                document.getElementById('user-name').innerText = currentUser.name;
+                document.getElementById('user-avatar').src = currentUser.avatar;
+                userInfo.style.display = 'flex'; [cite: 13]
                 document.getElementById('custom-id-container').classList.remove('hidden');
-            }
-            lucide.createIcons();
-        }
-
-        function renderUser() {
-            const container = document.getElementById('user-profile');
-            if (me.isGuest) {
-                container.innerHTML = `<button onclick="login()" class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-full border border-blue-200 transition-all">Noppoログイン</button>`;
             } else {
-                container.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="text-right hidden sm:block"><p class="text-xs font-bold text-slate-800">${me.name}</p></div>
-                        <img src="${me.avatar}" class="w-8 h-8 rounded-full border border-slate-200 shadow-sm">
-                        <button onclick="logout()" class="text-slate-400 hover:text-rose-500"><i data-lucide="log-out" class="w-4 h-4"></i></button>
-                    </div>`;
+                const saved = localStorage.getItem('noppo_li_user');
+                if (saved) {
+                    currentUser = JSON.parse(saved);
+                    document.getElementById('user-name').innerText = currentUser.name;
+                    document.getElementById('user-avatar').src = currentUser.avatar;
+                    userInfo.style.display = 'flex';
+                    if (!currentUser.isGuest) document.getElementById('custom-id-container').classList.remove('hidden');
+                } else {
+                    // ゲストID生成
+                    const guestId = 'guest_' + Math.random().toString(36).substring(2, 10);
+                    currentUser = { uid: guestId, name: 'ゲスト', isGuest: true };
+                    loginBtn.style.display = 'block'; [cite: 14]
+                    document.getElementById('guest-notice').classList.remove('hidden');
+                }
             }
+
+            document.getElementById('loader').classList.add('hidden');
+            listenLinks();
             lucide.createIcons();
         }
-
-        function login() { window.location.href = `${AUTH_WORKER_URL}?redirect=${encodeURIComponent(window.location.href)}`; }
-        function logout() { localStorage.removeItem('noppo_user'); location.reload(); }
 
         async function createShortLink() {
             const btn = document.getElementById('submit-btn');
@@ -264,15 +295,13 @@
             btn.innerText = "作成中...";
 
             let shortId = "";
-            if (!me.isGuest && customIdInput.value.trim()) {
+            if (!currentUser.isGuest && customIdInput.value.trim()) {
                 shortId = customIdInput.value.trim().replace(/[^a-zA-Z0-9_-]/g, "");
-                
-                const existing = await db.collection("artifacts").doc(APP_ID).collection("links")
-                    .where("shortId", "==", shortId).limit(1).get();
+                const existing = await db.collection("artifacts").doc(APP_ID).collection("links").where("shortId", "==", shortId).limit(1).get();
                 if (!existing.empty) {
                     showToast("そのIDは既に使用されています。");
                     btn.disabled = false;
-                    btn.innerText = "短縮";
+                    btn.innerText = "短縮する";
                     return;
                 }
             } else {
@@ -280,7 +309,7 @@
             }
 
             let expiresAt = null;
-            if (me.isGuest) {
+            if (currentUser.isGuest) {
                 const date = new Date();
                 date.setMonth(date.getMonth() + 1);
                 expiresAt = firebase.firestore.Timestamp.fromDate(date);
@@ -290,9 +319,9 @@
                 await db.collection("artifacts").doc(APP_ID).collection("links").add({
                     shortId,
                     longUrl,
-                    authorUid: me.uid,
+                    authorUid: currentUser.uid,
                     clicks: 0,
-                    isGuest: me.isGuest || false,
+                    isGuest: currentUser.isGuest,
                     expiresAt: expiresAt,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -300,31 +329,30 @@
                 if (customIdInput) customIdInput.value = "";
                 showModal(shortId);
             } catch (e) {
-                console.error(e);
                 showToast("保存に失敗しました。");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "短縮";
+                btn.innerText = "短縮する";
             }
         }
 
         function listenLinks() {
-            if (!me.uid) return;
+            if (!currentUser) return;
             db.collection("artifacts").doc(APP_ID).collection("links")
-                .where("authorUid", "==", me.uid)
+                .where("authorUid", "==", currentUser.uid)
                 .onSnapshot(snapshot => {
-                    links = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderLinks();
+                    const links = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderLinks(links);
                 });
         }
 
-        function renderLinks() {
+        function renderLinks(links) {
             const list = document.getElementById('links-list');
             const stats = document.getElementById('stats-summary');
             list.innerHTML = "";
 
             if (links.length === 0) {
-                list.innerHTML = `<div class="py-20 text-center border border-slate-100 rounded-xl bg-white"><p class="text-sm text-slate-400 font-bold tracking-tight">履歴なし</p></div>`;
+                list.innerHTML = `<div class="py-20 text-center border border-slate-100 rounded-2xl bg-white"><p class="text-sm text-slate-400 font-bold">履歴はありません</p></div>`;
                 stats.innerText = "0 links";
                 return;
             }
@@ -337,23 +365,25 @@
                 const item = document.createElement('div');
                 item.className = "noppo-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group";
                 const shortUrl = `${SITE_DOMAIN}/?i=${link.shortId}`;
-                const expiryTag = (link.isGuest && link.expiresAt) ? `<span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-100 font-bold uppercase ml-2">1ヶ月限定</span>` : "";
+                const expiryTag = (link.isGuest && link.expiresAt) ? `<span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-0.5 rounded border border-amber-100 font-bold ml-2">1ヶ月限定</span>` : "";
 
                 item.innerHTML = `
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-                            <span class="font-bold text-blue-600 text-base truncate">${shortUrl}</span>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-blue-600 text-lg truncate">${shortUrl}</span>
                             ${expiryTag}
-                            <button onclick="copyToClipboard('${shortUrl}')" class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-blue-600 transition-all"><i data-lucide="copy" class="w-4 h-4"></i></button>
                         </div>
                         <div class="text-xs text-slate-400 font-medium truncate">${link.longUrl}</div>
                     </div>
-                    <div class="flex items-center gap-8 pl-0 sm:pl-6 border-t sm:border-t-0 sm:border-l border-slate-100 pt-4 sm:pt-0">
+                    <div class="flex items-center gap-6">
                         <div class="text-right">
-                            <p class="text-[9px] text-slate-400 uppercase font-extrabold tracking-widest mb-1">クリック</p>
-                            <p class="text-xl font-black text-slate-800 tabular-nums">${link.clicks || 0}</p>
+                            <p class="text-[9px] text-slate-400 uppercase font-extrabold tracking-widest">Clicks</p>
+                            <p class="text-xl font-black text-slate-800">${link.clicks || 0}</p>
                         </div>
-                        <button onclick="deleteLink('${link.id}')" class="p-2.5 text-slate-200 hover:text-rose-500 transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <div class="flex gap-2">
+                            <button onclick="copyToClipboard('${shortUrl}')" class="p-2 text-slate-300 hover:text-blue-600 transition-colors"><i data-lucide="copy" class="w-5 h-5"></i></button>
+                            <button onclick="deleteLink('${link.id}')" class="p-2 text-slate-300 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        </div>
                     </div>`;
                 list.appendChild(item);
             });
@@ -361,7 +391,7 @@
         }
 
         async function deleteLink(id) {
-            if (confirm("削除しますか？")) {
+            if (confirm("このリンクを削除しますか？")) {
                 await db.collection("artifacts").doc(APP_ID).collection("links").doc(id).delete();
                 showToast("削除しました");
             }
@@ -370,21 +400,23 @@
         function showModal(shortId) {
             const shortUrl = `${SITE_DOMAIN}/?i=${shortId}`;
             document.getElementById('result-short-url').innerText = shortUrl;
-            document.getElementById('detail-modal').classList.remove('hidden');
+            const modal = document.getElementById('detail-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.firstElementChild.classList.remove('scale-95'), 10);
             lucide.createIcons();
         }
 
-        function closeModal() { document.getElementById('detail-modal').classList.add('hidden'); }
+        function closeModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
 
         function copyToClipboard(text) {
             const target = text || document.getElementById('result-short-url').innerText;
-            const el = document.createElement('textarea');
-            el.value = target;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            showToast("コピーしました");
+            navigator.clipboard.writeText(target).then(() => {
+                showToast("クリップボードにコピーしました");
+            });
         }
 
         function showToast(msg) {
@@ -408,7 +440,7 @@
                     const doc = snapshot.docs[0];
                     const data = doc.data();
                     if (data.expiresAt && new Date() > data.expiresAt.toDate()) {
-                        alert("有効期限切れです。");
+                        alert("このリンクは有効期限切れです。");
                         await db.collection("artifacts").doc(APP_ID).collection("links").doc(doc.id).delete();
                     } else {
                         await db.collection("artifacts").doc(APP_ID).collection("links").doc(doc.id).update({ clicks: firebase.firestore.FieldValue.increment(1) });
@@ -416,8 +448,7 @@
                         return true;
                     }
                 } else {
-                    // リンクが見つからない場合はアラートを出してトップへ
-                    alert("リンクが見つかりません。");
+                    alert("リンクが見つかりませんでした。");
                 }
                 window.history.replaceState({}, "", window.location.pathname);
             }
