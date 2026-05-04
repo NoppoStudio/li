@@ -3,157 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoppoLI | NoppoStudio</title>
+    <title>NoppoLI</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary: #1a73e8;
-            --bg-light: #f8f9fa;
-            --text-main: #202124;
-            --font-main: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
-            --glass-bg: rgba(255, 255, 255, 0.75);
-            --glass-border: rgba(26, 115, 232, 0.1);
+            --accent-blue: #0052ff;
+            --text-main: #1d1d1f;
+            --text-sub: #86868b;
+            --glass: rgba(255, 255, 255, 0.72);
         }
 
         body {
-            font-family: var(--font-main);
-            background-color: var(--bg-light);
+            font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
+            background-color: #f5f5f7;
             color: var(--text-main);
             margin: 0;
+            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* LiquidGlass Effect */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
+        /* Luminous Background */
+        .bg-canvas {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f0f4ff 100%);
+        }
+        .light-orb {
+            position: absolute; width: 80vw; height: 80vw;
+            background: radial-gradient(circle, rgba(0, 82, 255, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+            top: -20%; left: -10%; filter: blur(100px);
+        }
+
+        /* Glass Panel - Luminous Clarity Edition */
+        .luminous-panel {
+            background: var(--glass);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .noppo-card {
-            background: #ffffff;
-            border: 1px solid #eef2f6;
-            border-radius: 16px;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .noppo-card:hover {
+            background: white;
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 12px 24px rgba(0, 82, 255, 0.06);
+            border-color: rgba(0, 82, 255, 0.2);
         }
 
-        .noppo-card:hover {
-            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
-            border-color: var(--primary);
-            transform: translateY(-2px);
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: white;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 18px;
+            font-weight: 700;
         }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 82, 255, 0.2);
+        }
+        .btn-primary:active { transform: translateY(0); }
 
         .loading-screen {
             position: fixed; inset: 0; background: white; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-primary:hover {
-            background-color: #1557b0;
-            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
-        }
-
+        /* Toast UI */
         #toast {
-            position: fixed; bottom: 32px; left: 50%;
+            position: fixed; bottom: 40px; left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: #202124; color: white;
-            padding: 14px 28px; border-radius: 12px;
-            font-size: 14px; z-index: 2000;
-            opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
+            color: white; padding: 12px 24px; border-radius: 100px;
+            font-size: 14px; font-weight: 700; z-index: 2000;
+            opacity: 0; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
+    <div class="bg-canvas"><div class="light-orb"></div></div>
 
     <div id="loader" class="loading-screen">
-        <div class="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
-        <p class="mt-4 text-xs font-bold text-slate-400 tracking-widest uppercase">Initializing</p>
+        <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <p class="mt-4 text-xs font-bold text-slate-400 tracking-[0.2em] uppercase">NoppoLI</p>
     </div>
 
-    <header class="h-16 border-b border-slate-100 px-6 flex items-center justify-between bg-white/70 backdrop-blur-lg sticky top-0 z-50">
+    <!-- Header -->
+    <header class="h-20 px-8 flex items-center justify-between sticky top-0 z-50 bg-white/30 backdrop-blur-xl border-b border-white/20">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-100">
-                <i data-lucide="link-2" class="text-white w-5 h-5"></i>
+            <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100">
+                <i data-lucide="link-2" class="text-white w-6 h-6"></i>
             </div>
-            <h1 class="font-bold text-xl tracking-tight text-slate-800">NoppoLI</h1>
+            <h1 class="font-black text-2xl tracking-tight text-slate-800">NoppoLI</h1>
         </div>
         
         <div id="auth-section">
-            <button id="login-btn" onclick="login()" class="hidden text-sm font-bold text-blue-600 hover:bg-blue-50 px-5 py-2 rounded-full border border-blue-100 transition-all">サインイン</button>
-            <div id="user-info" class="hidden items-center gap-3">
+            <button id="login-btn" onclick="login()" class="hidden text-sm font-bold text-blue-600 bg-white/80 hover:bg-white px-6 py-2.5 rounded-full border border-blue-50 transition-all shadow-sm">サインイン</button>
+            <div id="user-info" class="hidden items-center gap-4">
                 <div class="text-right hidden sm:block">
-                    <p id="user-name" class="text-xs font-bold text-slate-800"></p>
+                    <p id="user-name" class="text-xs font-black text-slate-800 uppercase tracking-wider"></p>
                 </div>
-                <img id="user-avatar" class="w-8 h-8 rounded-full border border-slate-200" alt="User">
-                <button onclick="logout()" class="text-slate-400 hover:text-rose-500 transition-colors">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                <img id="user-avatar" class="w-10 h-10 rounded-2xl border-2 border-white shadow-sm" alt="User">
+                <button onclick="logout()" class="p-2 text-slate-400 hover:text-rose-500 transition-colors">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 max-w-4xl mx-auto w-full p-6 space-y-12">
-        <section class="mt-20 text-center space-y-4">
-            <h2 class="text-5xl font-black text-slate-900 tracking-tight">URLを短く、スマートに。</h2>
+    <main class="flex-1 max-w-4xl mx-auto w-full p-8 space-y-16">
+        <!-- Hero & Input Section -->
+        <section class="mt-16 text-center space-y-6">
+            <h2 class="text-5xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight">
+                URLを短く、<br><span class="text-blue-600">スマートに。</span>
+            </h2>
             
-            <div class="max-w-2xl mx-auto glass-panel p-2 shadow-2xl mt-10">
+            <div class="max-w-2xl mx-auto luminous-panel p-2 mt-12">
                 <div class="flex flex-col md:flex-row gap-2 items-center">
-                    <input type="text" id="long-url" placeholder="長いURLをここにペースト" class="flex-1 w-full px-6 py-4 bg-transparent outline-none text-base">
-                    <button id="submit-btn" onclick="createShortLink()" class="btn-primary w-full md:w-auto px-10 py-4 rounded-2xl font-bold text-sm">短縮する</button>
+                    <input type="text" id="long-url" placeholder="長いURLをここにペースト" class="flex-1 w-full px-6 py-4 bg-transparent outline-none text-lg font-semibold placeholder:text-slate-300">
+                    <button id="submit-btn" onclick="createShortLink()" class="btn-primary w-full md:w-auto px-10 py-4 text-sm uppercase tracking-widest">短縮する</button>
                 </div>
             </div>
 
-            <div id="custom-id-container" class="hidden mt-6">
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/50 border border-dashed border-slate-300 rounded-xl">
+            <div id="custom-id-container" class="hidden mt-8 animate-in fade-in slide-in-from-top-4 duration-700">
+                <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/40 border border-white rounded-2xl shadow-sm">
                     <span class="text-xs font-bold text-slate-400">linp.f5.si/?i=</span>
-                    <input type="text" id="custom-short-id" placeholder="カスタムID" class="bg-transparent outline-none text-sm text-blue-600 font-bold w-32" maxlength="20">
+                    <input type="text" id="custom-short-id" placeholder="カスタムID" class="bg-transparent outline-none text-sm text-blue-600 font-black w-32" maxlength="20">
                 </div>
             </div>
 
-            <p id="guest-notice" class="text-[11px] text-slate-400 mt-6 hidden">
-                <i data-lucide="shield-alert" class="w-3.5 h-3.5 inline mr-1"></i> ゲスト作成のリンクは1ヶ月で消去されます。
+            <p id="guest-notice" class="text-[11px] font-bold text-slate-400 mt-8 hidden">
+                <i data-lucide="shield-alert" class="w-3.5 h-3.5 inline mr-1"></i> ゲスト作成のリンクは1ヶ月で消去されます
             </p>
         </section>
 
-        <section>
+        <!-- History Section -->
+        <section class="pb-20">
             <div class="flex items-center justify-between mb-8">
-                <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
                     <i data-lucide="clock" class="w-4 h-4"></i> 最近のリンク
                 </h3>
-                <div id="stats-summary" class="text-xs font-bold text-blue-600 bg-blue-50 px-4 py-1.5 rounded-full border border-blue-100"></div>
+                <div id="stats-summary" class="text-[10px] font-black text-blue-600 bg-blue-50 px-4 py-2 rounded-full border border-blue-100 uppercase"></div>
             </div>
             <div id="links-list" class="grid gap-4"></div>
         </section>
     </main>
 
-    <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden z-[1000]">
-        <div class="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl">
+    <!-- Modal - Luminous Clarity Style -->
+    <div id="detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center hidden z-[1000] p-6">
+        <div class="luminous-panel w-full max-w-md p-10 shadow-3xl text-center">
             <div class="flex justify-between items-start mb-8">
-                <h3 class="font-bold text-2xl text-slate-900">作成完了！</h3>
-                <button onclick="closeModal()" class="p-1 hover:bg-slate-100 rounded-lg"><i data-lucide="x" class="w-6 h-6 text-slate-400"></i></button>
+                <h3 class="font-black text-2xl text-slate-900">作成完了！</h3>
+                <button onclick="closeModal()" class="p-2 hover:bg-black/5 rounded-xl transition-colors"><i data-lucide="x" class="w-6 h-6 text-slate-400"></i></button>
             </div>
+            
             <div class="space-y-8">
-                <div class="p-8 bg-slate-50 border border-slate-100 rounded-2xl text-center cursor-pointer" onclick="copyToClipboard()">
-                    <p id="result-short-url" class="text-2xl font-black text-blue-600 break-all"></p>
+                <div class="p-8 bg-white/50 border border-white rounded-3xl cursor-pointer hover:bg-white transition-all group" onclick="copyToClipboard()">
+                    <p id="result-short-url" class="text-2xl font-black text-blue-600 break-all group-hover:scale-105 transition-transform"></p>
                 </div>
-                <div class="flex gap-4">
-                    <button onclick="copyToClipboard()" class="flex-1 btn-primary py-4 rounded-2xl font-bold text-sm">コピー</button>
-                    <button onclick="downloadQR()" class="flex-1 border border-slate-200 py-4 rounded-2xl font-bold text-sm">QRコード</button>
+                <div class="flex gap-3">
+                    <button onclick="copyToClipboard()" class="flex-1 btn-primary py-4 text-xs uppercase tracking-widest">コピー</button>
+                    <button onclick="downloadQR()" class="flex-1 bg-white border border-slate-100 py-4 rounded-[18px] font-bold text-xs text-slate-600 uppercase tracking-widest hover:bg-slate-50 transition-all">QRコード</button>
                 </div>
             </div>
         </div>
@@ -161,11 +187,13 @@
 
     <div id="toast">コピーしました</div>
 
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // ロジックは元のNoppoLIを完全継承
         const AUTH_URL = "https://noppo-auth.noppo5319.workers.dev";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YXZhc3JkeGd1cWtpaWdjeGtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0MTk5ODcsImV4cCI6MjA4Mjk5NTk4N30.CVq3lyRbxek7Ejs4tP5sN9-0JNEXSLtCsC2Pj-skFFQ";
         const SITE_DOMAIN = "https://linp.f5.si"; 
@@ -183,17 +211,12 @@
         const APP_ID = "noppo_li_v2";
         let currentUser = null;
 
-        function login() {
-            window.location.href = AUTH_URL + "?redirect=" + encodeURIComponent(window.location.href);
-        }
+        function login() { window.location.href = AUTH_URL + "?redirect=" + encodeURIComponent(window.location.href); }
 
         async function init() {
             if (await handleRedirect()) return;
+            try { await auth.signInAnonymously(); } catch(e) { console.error("Firebase Error", e); }
 
-            // 1. Firebase 匿名認証をまず通す（これで共通ルール if request.auth != null を突破する）
-            try { await auth.signInAnonymously(); } catch(e) { console.error("Firebase Auth Error", e); }
-
-            // 2. NoppoAuthのチェック
             var urlParams = new URLSearchParams(window.location.search);
             var ticket = urlParams.get('ticket');
             var user = null;
@@ -205,9 +228,6 @@
                     window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
                 }
             }
-
-            const loginBtn = document.getElementById('login-btn');
-            const userInfo = document.getElementById('user-info');
 
             if (user) {
                 currentUser = { 
@@ -226,10 +246,10 @@
             if (!currentUser.isGuest) {
                 document.getElementById('user-name').innerText = currentUser.name;
                 document.getElementById('user-avatar').src = currentUser.avatar;
-                userInfo.style.display = 'flex';
+                document.getElementById('user-info').style.display = 'flex';
                 document.getElementById('custom-id-container').classList.remove('hidden');
             } else {
-                loginBtn.style.display = 'block';
+                document.getElementById('login-btn').style.display = 'block';
                 document.getElementById('guest-notice').classList.remove('hidden');
             }
 
@@ -244,12 +264,10 @@
             if (!longUrl) return;
             try { new URL(longUrl); } catch(e) { showToast("URLが無効です"); return; }
 
-            btn.disabled = true;
-            btn.innerText = "生成中...";
+            btn.disabled = true; btn.innerText = "WAIT...";
             
             var customId = document.getElementById('custom-short-id').value.trim();
             var shortId = (!currentUser.isGuest && customId) ? customId.replace(/[^a-zA-Z0-9_-]/g, "") : Math.random().toString(36).substring(2, 7);
-
             var expiresAt = null;
             if (currentUser.isGuest) {
                 var d = new Date(); d.setMonth(d.getMonth() + 1);
@@ -262,23 +280,23 @@
                 });
                 document.getElementById('long-url').value = "";
                 showModal(shortId);
-            } catch (e) { showToast("権限エラー: コンソールを確認してください"); } finally { btn.disabled = false; btn.innerText = "短縮する"; }
+            } catch (e) { showToast("Error: " + e.message); } finally { btn.disabled = false; btn.innerText = "短縮する"; }
         }
 
         function listenLinks() {
             db.collection("artifacts").doc(APP_ID).collection("links").where("authorUid", "==", currentUser.uid)
-                .onSnapshot(function(snap) {
+                .onSnapshot(snap => {
                     var links = [];
-                    snap.forEach(function(doc) { var d = doc.data(); d.id = doc.id; links.push(d); });
+                    snap.forEach(doc => { var d = doc.data(); d.id = doc.id; links.push(d); });
                     renderLinks(links);
-                }, function(err) { console.error("Listen Error", err); });
+                });
         }
 
         function renderLinks(links) {
             var list = document.getElementById('links-list');
             list.innerHTML = "";
             if (links.length === 0) {
-                list.innerHTML = '<div class="py-24 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-white text-slate-300 font-bold">リンク履歴がありません</div>';
+                list.innerHTML = '<div class="py-24 text-center border-2 border-dashed border-white/40 rounded-[32px] bg-white/20 text-slate-400 font-bold">リンク履歴がありません</div>';
                 document.getElementById('stats-summary').innerText = "0 links";
                 return;
             }
@@ -286,22 +304,22 @@
             var totalClicks = 0; links.forEach(l => totalClicks += (l.clicks || 0));
             document.getElementById('stats-summary').innerText = links.length + " links · " + totalClicks + " clicks";
 
-            links.forEach(function(link) {
+            links.forEach(link => {
                 var item = document.createElement('div');
-                item.className = "noppo-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group";
+                item.className = "noppo-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group animate-in fade-in slide-in-from-bottom-2 duration-500";
                 var shortUrl = SITE_DOMAIN + "/?i=" + link.shortId;
-                item.innerHTML = '\
-                    <div class="flex-1 min-w-0">\
-                        <div class="flex items-center gap-2 mb-1"><span class="font-bold text-blue-600 text-lg truncate">' + shortUrl + '</span></div>\
-                        <div class="text-xs text-slate-400 truncate font-medium">' + link.longUrl + '</div>\
-                    </div>\
-                    <div class="flex items-center gap-8">\
-                        <div class="text-right"><p class="text-[9px] text-slate-300 font-black uppercase tracking-widest">Clicks</p><p class="text-2xl font-black text-slate-800">' + (link.clicks || 0) + '</p></div>\
-                        <div class="flex gap-1">\
-                            <button onclick="copyToClipboard(\'' + shortUrl + '\')" class="p-2.5 text-slate-300 hover:text-blue-600"><i data-lucide="copy" class="w-5 h-5"></i></button>\
-                            <button onclick="deleteLink(\'' + link.id + '\')" class="p-2.5 text-slate-300 hover:text-rose-500"><i data-lucide="trash-2" class="w-5 h-5"></i></button>\
-                        </div>\
-                    </div>';
+                item.innerHTML = `
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1"><span class="font-black text-blue-600 text-xl truncate tracking-tight">\${shortUrl}</span></div>
+                        <div class="text-xs text-slate-400 truncate font-bold uppercase tracking-wider">\${link.longUrl}</div>
+                    </div>
+                    <div class="flex items-center gap-8">
+                        <div class="text-right"><p class="text-[9px] text-slate-300 font-black uppercase tracking-[0.2em]">Clicks</p><p class="text-3xl font-black text-slate-800 tracking-tighter">\${link.clicks || 0}</p></div>
+                        <div class="flex gap-2">
+                            <button onclick="copyToClipboard('\${shortUrl}')" class="p-3 text-slate-300 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"><i data-lucide="copy" class="w-5 h-5"></i></button>
+                            <button onclick="deleteLink('\${link.id}')" class="p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>`;
                 list.appendChild(item);
             });
             lucide.createIcons();
@@ -319,7 +337,6 @@
             var p = new URLSearchParams(window.location.search);
             var id = p.get('i');
             if (id && !p.has('ticket')) {
-                // リダイレクト処理時も匿名認証を通す必要がある（ルールが request.auth != null のため）
                 await auth.signInAnonymously();
                 var snap = await db.collection("artifacts").doc(APP_ID).collection("links").where("shortId", "==", id).limit(1).get();
                 if (!snap.empty) {
