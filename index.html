@@ -3,352 +3,2957 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoppoLI</title>
-    
+
+    <title>NoppoLI - URL Shortener</title>
+    <meta name="description" content="NoppoStudio URL Shortener">
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --accent-blue: #0052ff;
-            --text-main: #1d1d1f;
-            --text-sub: #86868b;
-            --glass: rgba(255, 255, 255, 0.72);
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', 'Noto Sans JP', sans-serif;
-            background-color: #f5f5f7;
-            color: var(--text-main);
-            margin: 0;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Luminous Background */
-        .bg-canvas {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f0f4ff 100%);
-        }
-        .light-orb {
-            position: absolute; width: 80vw; height: 80vw;
-            background: radial-gradient(circle, rgba(0, 82, 255, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
-            top: -20%; left: -10%; filter: blur(100px);
-        }
-
-        /* Glass Panel - Luminous Clarity Edition */
-        .luminous-panel {
-            background: var(--glass);
-            backdrop-filter: blur(40px) saturate(180%);
-            -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 32px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .noppo-card {
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            border-radius: 24px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .noppo-card:hover {
-            background: white;
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 12px 24px rgba(0, 82, 255, 0.06);
-            border-color: rgba(0, 82, 255, 0.2);
-        }
-
-        .btn-primary {
-            background-color: var(--accent-blue);
-            color: white;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            border-radius: 18px;
-            font-weight: 700;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 82, 255, 0.2);
-        }
-        .btn-primary:active { transform: translateY(0); }
-
-        .loading-screen {
-            position: fixed; inset: 0; background: white; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-
-        /* Toast UI */
-        #toast {
-            position: fixed; bottom: 40px; left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
-            color: white; padding: 12px 24px; border-radius: 100px;
-            font-size: 14px; font-weight: 700; z-index: 2000;
-            opacity: 0; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
-    <div class="bg-canvas"><div class="light-orb"></div></div>
-
-    <div id="loader" class="loading-screen">
-        <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="mt-4 text-xs font-bold text-slate-400 tracking-[0.2em] uppercase">NoppoLI</p>
-    </div>
-
-    <!-- Header -->
-    <header class="h-20 px-8 flex items-center justify-between sticky top-0 z-50 bg-white/30 backdrop-blur-xl border-b border-white/20">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100">
-                <i data-lucide="link-2" class="text-white w-6 h-6"></i>
-            </div>
-            <h1 class="font-black text-2xl tracking-tight text-slate-800">NoppoLI</h1>
-        </div>
-        
-        <div id="auth-section">
-            <button id="login-btn" onclick="login()" class="hidden text-sm font-bold text-blue-600 bg-white/80 hover:bg-white px-6 py-2.5 rounded-full border border-blue-50 transition-all shadow-sm">サインイン</button>
-            <div id="user-info" class="hidden items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p id="user-name" class="text-xs font-black text-slate-800 uppercase tracking-wider"></p>
-                </div>
-                <img id="user-avatar" class="w-10 h-10 rounded-2xl border-2 border-white shadow-sm" alt="User">
-                <button onclick="logout()" class="p-2 text-slate-400 hover:text-rose-500 transition-colors">
-                    <i data-lucide="log-out" class="w-5 h-5"></i>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <main class="flex-1 max-w-4xl mx-auto w-full p-8 space-y-16">
-        <!-- Hero & Input Section -->
-        <section class="mt-16 text-center space-y-6">
-            <h2 class="text-5xl md:text-6xl font-black text-slate-900 tracking-tight leading-tight">
-                URLを短く、<br><span class="text-blue-600">スマートに。</span>
-            </h2>
-            
-            <div class="max-w-2xl mx-auto luminous-panel p-2 mt-12">
-                <div class="flex flex-col md:flex-row gap-2 items-center">
-                    <input type="text" id="long-url" placeholder="長いURLをここにペースト" class="flex-1 w-full px-6 py-4 bg-transparent outline-none text-lg font-semibold placeholder:text-slate-300">
-                    <button id="submit-btn" onclick="createShortLink()" class="btn-primary w-full md:w-auto px-10 py-4 text-sm uppercase tracking-widest">短縮する</button>
-                </div>
-            </div>
-
-            <div id="custom-id-container" class="hidden mt-8 animate-in fade-in slide-in-from-top-4 duration-700">
-                <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/40 border border-white rounded-2xl shadow-sm">
-                    <span class="text-xs font-bold text-slate-400">linp.f5.si/?i=</span>
-                    <input type="text" id="custom-short-id" placeholder="カスタムID" class="bg-transparent outline-none text-sm text-blue-600 font-black w-32" maxlength="20">
-                </div>
-            </div>
-
-            <p id="guest-notice" class="text-[11px] font-bold text-slate-400 mt-8 hidden">
-                <i data-lucide="shield-alert" class="w-3.5 h-3.5 inline mr-1"></i> ゲスト作成のリンクは1ヶ月で消去されます
-            </p>
-        </section>
-
-        <!-- History Section -->
-        <section class="pb-20">
-            <div class="flex items-center justify-between mb-8">
-                <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
-                    <i data-lucide="clock" class="w-4 h-4"></i> 最近のリンク
-                </h3>
-                <div id="stats-summary" class="text-[10px] font-black text-blue-600 bg-blue-50 px-4 py-2 rounded-full border border-blue-100 uppercase"></div>
-            </div>
-            <div id="links-list" class="grid gap-4"></div>
-        </section>
-    </main>
-
-    <!-- Modal - Luminous Clarity Style -->
-    <div id="detail-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center hidden z-[1000] p-6">
-        <div class="luminous-panel w-full max-w-md p-10 shadow-3xl text-center">
-            <div class="flex justify-between items-start mb-8">
-                <h3 class="font-black text-2xl text-slate-900">作成完了！</h3>
-                <button onclick="closeModal()" class="p-2 hover:bg-black/5 rounded-xl transition-colors"><i data-lucide="x" class="w-6 h-6 text-slate-400"></i></button>
-            </div>
-            
-            <div class="space-y-8">
-                <div class="p-8 bg-white/50 border border-white rounded-3xl cursor-pointer hover:bg-white transition-all group" onclick="copyToClipboard()">
-                    <p id="result-short-url" class="text-2xl font-black text-blue-600 break-all group-hover:scale-105 transition-transform"></p>
-                </div>
-                <div class="flex gap-3">
-                    <button onclick="copyToClipboard()" class="flex-1 btn-primary py-4 text-xs uppercase tracking-widest">コピー</button>
-                    <button onclick="downloadQR()" class="flex-1 bg-white border border-slate-100 py-4 rounded-[18px] font-bold text-xs text-slate-600 uppercase tracking-widest hover:bg-slate-50 transition-all">QRコード</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="toast">コピーしました</div>
-
-    <!-- Firebase SDKs -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        :root {
+            --blue: #0040e0;
+            --blue-dark: #0033b8;
+            --text: #0d1830;
+            --muted: #667085;
+            --surface: #ffffff;
+            --surface-soft: #f6f9ff;
+            --border: #dfe7f5;
+            --danger: #d92d20;
+            --success: #027a48;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family:
+                "Plus Jakarta Sans",
+                "Noto Sans JP",
+                system-ui,
+                sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(0, 64, 224, 0.08),
+                    transparent 34rem
+                ),
+                linear-gradient(
+                    180deg,
+                    #f8fbff 0%,
+                    #f2f6fc 100%
+                );
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(223, 231, 245, 0.95);
+        }
+
+        .shadow-soft {
+            box-shadow:
+                0 18px 55px rgba(16, 40, 80, 0.08),
+                0 2px 8px rgba(16, 40, 80, 0.04);
+        }
+
+        .input {
+            width: 100%;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--text);
+            border-radius: 14px;
+            padding: 13px 15px;
+            outline: none;
+            transition:
+                border-color 0.18s ease,
+                box-shadow 0.18s ease;
+        }
+
+        .input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 4px rgba(0, 64, 224, 0.1);
+        }
+
+        .btn-primary {
+            border: 0;
+            border-radius: 14px;
+            padding: 13px 18px;
+            background: var(--blue);
+            color: #fff;
+            font-weight: 700;
+            transition:
+                transform 0.15s ease,
+                background 0.15s ease,
+                box-shadow 0.15s ease;
+            box-shadow: 0 8px 20px rgba(0, 64, 224, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--blue-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 11px 15px;
+            background: #fff;
+            color: var(--text);
+            font-weight: 600;
+            transition: background 0.15s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #f7f9fc;
+        }
+
+        .btn-danger {
+            border: 1px solid #f1d4d1;
+            border-radius: 12px;
+            padding: 9px 12px;
+            background: #fff;
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .btn-danger:hover {
+            background: #fff5f4;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.25s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast {
+            animation:
+                toastIn 0.25s ease,
+                toastOut 0.25s ease 3.2s forwards;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .empty-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 17px;
+            display: grid;
+            place-items: center;
+            background: #edf3ff;
+            color: var(--blue);
+            margin: 0 auto 14px;
+        }
+
+        .link-card {
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        .link-card:hover {
+            transform: translateY(-1px);
+            box-shadow:
+                0 12px 35px rgba(16, 40, 80, 0.08);
+        }
+
+        @media (max-width: 640px) {
+            .mobile-stack {
+                flex-direction: column;
+            }
+
+            .mobile-full {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40">
+        <div class="glass">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="h-16 flex items-center justify-between">
+
+                    <a
+                        href="/"
+                        class="flex items-center gap-3"
+                        aria-label="NoppoLI"
+                    >
+                        <div
+                            class="w-10 h-10 rounded-xl bg-[#0040e0] text-white grid place-items-center shadow-lg shadow-blue-200"
+                        >
+                            <span class="font-extrabold text-lg">N</span>
+                        </div>
+
+                        <div>
+                            <div class="font-extrabold tracking-tight">
+                                NoppoLI
+                            </div>
+                            <div class="text-[11px] text-slate-500">
+                                URL Shortener
+                            </div>
+                        </div>
+                    </a>
+
+                    <div class="flex items-center gap-2">
+
+                        <div
+                            id="userBadge"
+                            class="hidden items-center gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200"
+                        >
+                            <i data-lucide="user-round" class="w-4 h-4"></i>
+                            <span
+                                id="usernameDisplay"
+                                class="text-sm font-semibold"
+                            >
+                                -
+                            </span>
+                        </div>
+
+                        <button
+                            id="loginButton"
+                            class="btn-secondary flex items-center gap-2"
+                            type="button"
+                        >
+                            <i data-lucide="key-round" class="w-4 h-4"></i>
+                            Noppo IDでログイン
+                        </button>
+
+                        <button
+                            id="logoutButton"
+                            class="hidden btn-secondary flex items-center gap-2"
+                            type="button"
+                        >
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            ログアウト
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+
+        <!-- Hero -->
+        <section class="text-center mb-10 fade-in">
+
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold mb-4"
+            >
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                NoppoStudio
+            </div>
+
+            <h1
+                class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4"
+            >
+                長いURLを、
+                <span class="text-[#0040e0]">短く。</span>
+            </h1>
+
+            <p class="text-slate-600 max-w-2xl mx-auto leading-7">
+                NoppoLIは、シンプルで高速なNoppoStudioのURL短縮サービスです。
+            </p>
+
+        </section>
+
+        <!-- Main card -->
+        <section
+            class="glass shadow-soft rounded-3xl p-5 sm:p-8 mb-8 fade-in"
+        >
+
+            <div class="flex items-center gap-3 mb-6">
+
+                <div
+                    class="w-11 h-11 rounded-2xl bg-blue-50 text-[#0040e0] grid place-items-center"
+                >
+                    <i data-lucide="link" class="w-5 h-5"></i>
+                </div>
+
+                <div>
+                    <h2 class="font-extrabold text-lg">
+                        URLを短縮
+                    </h2>
+
+                    <p class="text-sm text-slate-500">
+                        短縮したいURLを入力してください
+                    </p>
+                </div>
+
+            </div>
+
+            <form id="shortenForm">
+
+                <div class="mb-4">
+                    <label
+                        for="longUrl"
+                        class="block text-sm font-bold mb-2"
+                    >
+                        URL
+                    </label>
+
+                    <input
+                        id="longUrl"
+                        class="input"
+                        type="url"
+                        placeholder="https://example.com/very/long/url"
+                        autocomplete="url"
+                        required
+                    >
+                </div>
+
+                <!-- Custom ID -->
+                <div class="mb-5">
+
+                    <label
+                        for="customId"
+                        class="block text-sm font-bold mb-2"
+                    >
+                        カスタムID
+                        <span class="font-normal text-slate-400">
+                            （任意）
+                        </span>
+                    </label>
+
+                    <div class="flex items-center gap-2">
+
+                        <span
+                            class="hidden sm:block text-sm text-slate-400 whitespace-nowrap"
+                        >
+                            linp.f5.si/?i=
+                        </span>
+
+                        <input
+                            id="customId"
+                            class="input"
+                            type="text"
+                            maxlength="20"
+                            placeholder="my-link"
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+
+                    </div>
+
+                    <p class="mt-2 text-xs text-slate-500">
+                        英数字・アンダースコア・ハイフンを使用できます。最大20文字。
+                    </p>
+
+                </div>
+
+                <div class="flex mobile-stack gap-3">
+
+                    <button
+                        id="shortenButton"
+                        type="submit"
+                        class="btn-primary flex-1 flex items-center justify-center gap-2"
+                    >
+                        <i data-lucide="wand-sparkles" class="w-5 h-5"></i>
+                        <span>URLを短縮する</span>
+                    </button>
+
+                </div>
+
+            </form>
+
+            <!-- Result -->
+            <div
+                id="resultArea"
+                class="hidden mt-6 p-4 rounded-2xl bg-blue-50 border border-blue-100 fade-in"
+            >
+
+                <div class="flex items-start gap-3">
+
+                    <div
+                        class="w-9 h-9 rounded-xl bg-white text-[#0040e0] grid place-items-center shrink-0"
+                    >
+                        <i data-lucide="check" class="w-5 h-5"></i>
+                    </div>
+
+                    <div class="min-w-0 flex-1">
+
+                        <div class="text-sm font-bold mb-2">
+                            短縮しました
+                        </div>
+
+                        <div class="flex mobile-stack gap-2">
+
+                            <input
+                                id="resultUrl"
+                                class="input bg-white"
+                                readonly
+                            >
+
+                            <div class="flex gap-2">
+
+                                <button
+                                    id="copyButton"
+                                    type="button"
+                                    class="btn-secondary flex items-center justify-center gap-2 whitespace-nowrap"
+                                >
+                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                    コピー
+                                </button>
+
+                                <button
+                                    id="qrButton"
+                                    type="button"
+                                    class="btn-secondary flex items-center justify-center gap-2 whitespace-nowrap"
+                                >
+                                    <i data-lucide="qr-code" class="w-4 h-4"></i>
+                                    QR
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- History -->
+        <section
+            id="historySection"
+            class="glass shadow-soft rounded-3xl p-5 sm:p-8 fade-in"
+        >
+
+            <div class="flex items-center justify-between gap-4 mb-6">
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-700 grid place-items-center"
+                    >
+                        <i data-lucide="history" class="w-5 h-5"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="font-extrabold text-lg">
+                            作成履歴
+                        </h2>
+
+                        <p
+                            id="historyDescription"
+                            class="text-sm text-slate-500"
+                        >
+                            Noppo IDでログインすると表示されます
+                        </p>
+                    </div>
+
+                </div>
+
+                <button
+                    id="refreshHistoryButton"
+                    type="button"
+                    class="btn-secondary hidden items-center gap-2"
+                >
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    更新
+                </button>
+
+            </div>
+
+            <div id="historyList"></div>
+
+        </section>
+
+        <!-- Guest information -->
+        <section
+            class="mt-6 rounded-2xl bg-white/70 border border-slate-200 p-5"
+        >
+
+            <div class="flex gap-3">
+
+                <div class="text-slate-500 mt-0.5">
+                    <i data-lucide="info" class="w-5 h-5"></i>
+                </div>
+
+                <div class="text-sm text-slate-600 leading-6">
+
+                    <p class="font-bold text-slate-800 mb-1">
+                        ログインなしでも利用できます
+                    </p>
+
+                    <p>
+                        ゲストで作成した短縮URLは1か月後に有効期限が切れます。
+                        Noppo IDでログインすると、作成したリンクを履歴から管理できます。
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- QR Modal -->
+    <div
+        id="qrModal"
+        class="hidden fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-sm p-4"
+    >
+
+        <div
+            class="min-h-full flex items-center justify-center"
+        >
+
+            <div
+                class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 fade-in"
+            >
+
+                <div class="flex items-center justify-between mb-5">
+
+                    <div>
+                        <h3 class="font-extrabold text-lg">
+                            QRコード
+                        </h3>
+
+                        <p class="text-xs text-slate-500 mt-1">
+                            短縮URLを読み取れます
+                        </p>
+                    </div>
+
+                    <button
+                        id="closeQrButton"
+                        type="button"
+                        class="btn-secondary !p-2"
+                        aria-label="閉じる"
+                    >
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+
+                </div>
+
+                <div
+                    class="bg-white border border-slate-200 rounded-2xl p-5 flex justify-center"
+                >
+                    <img
+                        id="qrImage"
+                        src=""
+                        alt="QR Code"
+                        class="w-64 h-64 object-contain"
+                    >
+                </div>
+
+                <div
+                    id="qrUrl"
+                    class="mt-4 text-sm text-slate-600 break-all text-center"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Toast -->
+    <div
+        id="toastContainer"
+        class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 pointer-events-none"
+    ></div>
+
     <script>
-        // ロジックは元のNoppoLIを完全継承
-        const AUTH_URL = "https://noppo-auth.noppo5319.workers.dev";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2YXZhc3JkeGd1cWtpaWdjeGtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0MTk5ODcsImV4cCI6MjA4Mjk5NTk4N30.CVq3lyRbxek7Ejs4tP5sN9-0JNEXSLtCsC2Pj-skFFQ";
-        const SITE_DOMAIN = "https://linp.f5.si"; 
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyB2HcI-TwH88QDADp-Z5cUFRCsaVO2VMw0",
+        "use strict";
+
+        /* =========================================================
+           Configuration
+        ========================================================= */
+
+        const APP_ID = "noppo_li_v2";
+
+        const SITE_URL = "https://linp.f5.si";
+
+        const NOPPO_ID_API =
+            "https://noppo-id.noppo5319.workers.dev";
+
+        const NOPPO_ID_FRONTEND =
+            "https://id-noppo.pages.dev";
+
+        const FIREBASE_CONFIG = {
+            apiKey: "REPLACE_WITH_YOUR_FIREBASE_API_KEY",
             authDomain: "portal-1767266387985.firebaseapp.com",
             projectId: "portal-1767266387985",
-            appId: "1:931194072772:web:f97c2e7e1ac1eb301d6391"
+            storageBucket: "portal-1767266387985.appspot.com",
+            messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
+            appId: "REPLACE_WITH_YOUR_FIREBASE_APP_ID"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const LINKS_COLLECTION =
+            `artifacts/${APP_ID}/links`;
+
+        const GUEST_EXPIRATION_MS =
+            30 * 24 * 60 * 60 * 1000;
+
+        const OAUTH_STATE_KEY =
+            "noppo_li_oauth_state";
+
+        const OAUTH_VERIFIER_KEY =
+            "noppo_li_oauth_code_verifier";
+
+        const OAUTH_SESSION_KEY =
+            "noppo_li_authorization_session";
+
+        const NOPPO_ACCOUNT_KEY =
+            "noppo_li_noppo_account";
+
+        /* =========================================================
+           Firebase
+        ========================================================= */
+
+        firebase.initializeApp(FIREBASE_CONFIG);
+
         const auth = firebase.auth();
-        const APP_ID = "noppo_li_v2";
-        let currentUser = null;
+        const db = firebase.firestore();
 
-        function login() { window.location.href = AUTH_URL + "?redirect=" + encodeURIComponent(window.location.href); }
+        let firebaseUser = null;
 
-        async function init() {
-            if (await handleRedirect()) return;
-            try { await auth.signInAnonymously(); } catch(e) { console.error("Firebase Error", e); }
+        /*
+         * Noppo ID identity.
+         *
+         * IMPORTANT:
+         * This is NOT Firebase's anonymous UID.
+         */
+        let noppoAccount = null;
 
-            var urlParams = new URLSearchParams(window.location.search);
-            var ticket = urlParams.get('ticket');
-            var user = null;
+        let currentShortUrl = null;
 
-            if (ticket) {
-                const res = await fetch(AUTH_URL + "/auth/v1/user?ticket=" + ticket, { headers: { 'apikey': SUPABASE_KEY } });
-                if (res.ok) {
-                    user = await res.json();
-                    window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
+        let historyUnsubscribe = null;
+
+        /* =========================================================
+           DOM
+        ========================================================= */
+
+        const $ = (id) =>
+            document.getElementById(id);
+
+        const loginButton =
+            $("loginButton");
+
+        const logoutButton =
+            $("logoutButton");
+
+        const userBadge =
+            $("userBadge");
+
+        const usernameDisplay =
+            $("usernameDisplay");
+
+        const shortenForm =
+            $("shortenForm");
+
+        const longUrlInput =
+            $("longUrl");
+
+        const customIdInput =
+            $("customId");
+
+        const shortenButton =
+            $("shortenButton");
+
+        const resultArea =
+            $("resultArea");
+
+        const resultUrl =
+            $("resultUrl");
+
+        const copyButton =
+            $("copyButton");
+
+        const qrButton =
+            $("qrButton");
+
+        const historyList =
+            $("historyList");
+
+        const historyDescription =
+            $("historyDescription");
+
+        const refreshHistoryButton =
+            $("refreshHistoryButton");
+
+        const qrModal =
+            $("qrModal");
+
+        const qrImage =
+            $("qrImage");
+
+        const qrUrl =
+            $("qrUrl");
+
+        const closeQrButton =
+            $("closeQrButton");
+
+        /* =========================================================
+           Utility
+        ========================================================= */
+
+        function showToast(message, type = "info") {
+
+            const toast =
+                document.createElement("div");
+
+            toast.className =
+                "toast pointer-events-auto px-4 py-3 rounded-2xl shadow-xl text-sm font-semibold border bg-white";
+
+            if (type === "error") {
+                toast.classList.add(
+                    "border-red-200",
+                    "text-red-700"
+                );
+            } else if (type === "success") {
+                toast.classList.add(
+                    "border-emerald-200",
+                    "text-emerald-700"
+                );
+            } else {
+                toast.classList.add(
+                    "border-slate-200",
+                    "text-slate-700"
+                );
+            }
+
+            toast.textContent = message;
+
+            $("toastContainer").appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3600);
+        }
+
+
+        function escapeHtml(value) {
+
+            const div =
+                document.createElement("div");
+
+            div.textContent =
+                String(value ?? "");
+
+            return div.innerHTML;
+        }
+
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "-";
+            }
+
+            let date;
+
+            if (
+                value &&
+                typeof value.toDate === "function"
+            ) {
+                date = value.toDate();
+            } else if (
+                value instanceof Date
+            ) {
+                date = value;
+            } else {
+                date = new Date(value);
+            }
+
+            if (
+                Number.isNaN(date.getTime())
+            ) {
+                return "-";
+            }
+
+            return new Intl.DateTimeFormat(
+                "ja-JP",
+                {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            ).format(date);
+        }
+
+
+        function isValidHttpUrl(value) {
+
+            try {
+
+                const url =
+                    new URL(value);
+
+                return (
+                    url.protocol === "http:" ||
+                    url.protocol === "https:"
+                );
+
+            } catch {
+                return false;
+            }
+        }
+
+
+        function sanitizeCustomId(value) {
+
+            return String(value || "")
+                .replace(
+                    /[^A-Za-z0-9_-]/g,
+                    ""
+                )
+                .slice(0, 20);
+        }
+
+
+        function randomId(length = 7) {
+
+            const chars =
+                "abcdefghijklmnopqrstuvwxyz0123456789";
+
+            const bytes =
+                new Uint8Array(length);
+
+            crypto.getRandomValues(bytes);
+
+            let output = "";
+
+            for (const byte of bytes) {
+                output +=
+                    chars[byte % chars.length];
+            }
+
+            return output;
+        }
+
+
+        function randomString(bytes = 32) {
+
+            const array =
+                new Uint8Array(bytes);
+
+            crypto.getRandomValues(array);
+
+            return Array.from(array)
+                .map(
+                    byte =>
+                        byte
+                            .toString(16)
+                            .padStart(2, "0")
+                )
+                .join("");
+        }
+
+
+        function base64UrlEncode(buffer) {
+
+            const bytes =
+                new Uint8Array(buffer);
+
+            let binary = "";
+
+            for (const byte of bytes) {
+                binary += String.fromCharCode(byte);
+            }
+
+            return btoa(binary)
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=+$/g, "");
+        }
+
+
+        async function sha256Base64Url(value) {
+
+            const data =
+                new TextEncoder().encode(value);
+
+            const digest =
+                await crypto.subtle.digest(
+                    "SHA-256",
+                    data
+                );
+
+            return base64UrlEncode(digest);
+        }
+
+
+        async function generateCodeVerifier() {
+
+            /*
+             * RFC 7636 verifier.
+             * 32 random bytes -> 64 hex chars.
+             */
+            return randomString(32);
+        }
+
+
+        async function generateCodeChallenge(
+            codeVerifier
+        ) {
+
+            return sha256Base64Url(
+                codeVerifier
+            );
+        }
+
+
+        function setButtonLoading(
+            button,
+            loading,
+            loadingText = "処理中..."
+        ) {
+
+            if (!button) {
+                return;
+            }
+
+            if (loading) {
+
+                button.dataset.originalHtml =
+                    button.innerHTML;
+
+                button.disabled = true;
+
+                button.innerHTML = `
+                    <span class="spinner"></span>
+                    <span>${escapeHtml(loadingText)}</span>
+                `;
+
+            } else {
+
+                button.disabled = false;
+
+                if (
+                    button.dataset.originalHtml
+                ) {
+                    button.innerHTML =
+                        button.dataset.originalHtml;
                 }
             }
 
-            if (user) {
-                currentUser = { 
-                    uid: user.id || user.userId, 
-                    name: user.user_metadata ? user.user_metadata.display_name : (user.userId || "No Name"),
-                    avatar: user.user_metadata ? user.user_metadata.avatar_url : (user.avatar || "https://api.dicebear.com/7.x/initials/svg?seed=" + user.email),
-                    isGuest: false 
-                };
-                localStorage.setItem('noppo_li_user', JSON.stringify(currentUser));
-            } else {
-                var saved = localStorage.getItem('noppo_li_user');
-                if (saved) currentUser = JSON.parse(saved);
-                else currentUser = { uid: 'guest_' + Math.random().toString(36).substring(2, 10), name: 'ゲスト', isGuest: true };
-            }
-
-            if (!currentUser.isGuest) {
-                document.getElementById('user-name').innerText = currentUser.name;
-                document.getElementById('user-avatar').src = currentUser.avatar;
-                document.getElementById('user-info').style.display = 'flex';
-                document.getElementById('custom-id-container').classList.remove('hidden');
-            } else {
-                document.getElementById('login-btn').style.display = 'block';
-                document.getElementById('guest-notice').classList.remove('hidden');
-            }
-
-            document.getElementById('loader').classList.add('hidden');
-            listenLinks();
             lucide.createIcons();
         }
 
-        async function createShortLink() {
-            var btn = document.getElementById('submit-btn');
-            var longUrl = document.getElementById('long-url').value.trim();
-            if (!longUrl) return;
-            try { new URL(longUrl); } catch(e) { showToast("URLが無効です"); return; }
 
-            btn.disabled = true; btn.innerText = "WAIT...";
-            
-            var customId = document.getElementById('custom-short-id').value.trim();
-            var shortId = (!currentUser.isGuest && customId) ? customId.replace(/[^a-zA-Z0-9_-]/g, "") : Math.random().toString(36).substring(2, 7);
-            var expiresAt = null;
-            if (currentUser.isGuest) {
-                var d = new Date(); d.setMonth(d.getMonth() + 1);
-                expiresAt = firebase.firestore.Timestamp.fromDate(d);
+        function clearOAuthStorage() {
+
+            sessionStorage.removeItem(
+                OAUTH_STATE_KEY
+            );
+
+            sessionStorage.removeItem(
+                OAUTH_VERIFIER_KEY
+            );
+
+            sessionStorage.removeItem(
+                OAUTH_SESSION_KEY
+            );
+        }
+
+
+        function saveNoppoAccount(account) {
+
+            noppoAccount = {
+                id: account.id,
+                username: account.username
+            };
+
+            localStorage.setItem(
+                NOPPO_ACCOUNT_KEY,
+                JSON.stringify(noppoAccount)
+            );
+        }
+
+
+        function loadNoppoAccount() {
+
+            try {
+
+                const raw =
+                    localStorage.getItem(
+                        NOPPO_ACCOUNT_KEY
+                    );
+
+                if (!raw) {
+                    return null;
+                }
+
+                const account =
+                    JSON.parse(raw);
+
+                if (
+                    !account ||
+                    typeof account.id !== "string" ||
+                    typeof account.username !== "string"
+                ) {
+                    return null;
+                }
+
+                return account;
+
+            } catch {
+                return null;
+            }
+        }
+
+
+        function clearNoppoAccount() {
+
+            noppoAccount = null;
+
+            localStorage.removeItem(
+                NOPPO_ACCOUNT_KEY
+            );
+        }
+
+
+        /* =========================================================
+           Firebase anonymous session
+        ========================================================= */
+
+        async function ensureFirebaseAnonymousAuth() {
+
+            if (auth.currentUser) {
+
+                firebaseUser =
+                    auth.currentUser;
+
+                return firebaseUser;
+            }
+
+            const credential =
+                await auth.signInAnonymously();
+
+            firebaseUser =
+                credential.user;
+
+            return firebaseUser;
+        }
+
+
+        /* =========================================================
+           Noppo ID OAuth
+        ========================================================= */
+
+        async function registerOAuthClient() {
+
+            const redirectUri =
+                `${SITE_URL}/`;
+
+            const response =
+                await fetch(
+                    `${NOPPO_ID_API}/oauth/register`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            clientName: "NoppoLI",
+                            redirectUris: [
+                                redirectUri
+                            ]
+                        })
+                    }
+                );
+
+            let result;
+
+            try {
+                result =
+                    await response.json();
+            } catch {
+                throw new Error(
+                    "Noppo IDのサービス登録応答を解析できませんでした。"
+                );
+            }
+
+            if (
+                !response.ok ||
+                !result.ok
+            ) {
+
+                throw new Error(
+                    result.error ||
+                    "Noppo IDサービス登録に失敗しました。"
+                );
+            }
+
+            return result;
+        }
+
+
+        async function startNoppoLogin() {
+
+            setButtonLoading(
+                loginButton,
+                true,
+                "認証準備中..."
+            );
+
+            try {
+
+                /*
+                 * Firebase anonymous authentication
+                 * is independent from Noppo ID identity.
+                 */
+                await ensureFirebaseAnonymousAuth();
+
+                await registerOAuthClient();
+
+                const state =
+                    randomString(32);
+
+                const codeVerifier =
+                    await generateCodeVerifier();
+
+                const codeChallenge =
+                    await generateCodeChallenge(
+                        codeVerifier
+                    );
+
+                sessionStorage.setItem(
+                    OAUTH_STATE_KEY,
+                    state
+                );
+
+                sessionStorage.setItem(
+                    OAUTH_VERIFIER_KEY,
+                    codeVerifier
+                );
+
+                const response =
+                    await fetch(
+                        `${NOPPO_ID_API}/authorize/start`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                redirectUri:
+                                    `${SITE_URL}/`,
+
+                                state,
+
+                                codeChallenge,
+
+                                codeChallengeMethod:
+                                    "S256"
+                            })
+                        }
+                    );
+
+                let result;
+
+                try {
+                    result =
+                        await response.json();
+                } catch {
+                    throw new Error(
+                        "Noppo IDの認証開始応答を解析できませんでした。"
+                    );
+                }
+
+                if (
+                    !response.ok ||
+                    !result.ok
+                ) {
+
+                    throw new Error(
+                        result.error ||
+                        "Noppo IDの認証を開始できませんでした。"
+                    );
+                }
+
+                const authorizationSessionId =
+                    result.authorizationSessionId;
+
+                if (
+                    !authorizationSessionId
+                ) {
+                    throw new Error(
+                        "authorizationSessionIdを取得できませんでした。"
+                    );
+                }
+
+                sessionStorage.setItem(
+                    OAUTH_SESSION_KEY,
+                    authorizationSessionId
+                );
+
+                /*
+                 * Noppo ID frontend.
+                 *
+                 * v5.2.1 manual specifies that the
+                 * authorizationSessionId is handed to
+                 * the Noppo ID frontend.
+                 */
+                const authUrl =
+                    new URL(
+                        NOPPO_ID_FRONTEND
+                    );
+
+                authUrl.searchParams.set(
+                    "authorizationSessionId",
+                    authorizationSessionId
+                );
+
+                location.href =
+                    authUrl.toString();
+
+            } catch (error) {
+
+                console.error(
+                    "Noppo ID login error:",
+                    error
+                );
+
+                clearOAuthStorage();
+
+                showToast(
+                    error.message ||
+                    "ログインを開始できませんでした。",
+                    "error"
+                );
+
+                setButtonLoading(
+                    loginButton,
+                    false
+                );
+            }
+        }
+
+
+        async function handleOAuthCallback() {
+
+            const params =
+                new URLSearchParams(
+                    location.search
+                );
+
+            const code =
+                params.get("code");
+
+            const returnedState =
+                params.get("state");
+
+            if (!code && !returnedState) {
+                return false;
+            }
+
+            if (!code || !returnedState) {
+
+                clearOAuthStorage();
+
+                showToast(
+                    "OAuth callbackが不正です。",
+                    "error"
+                );
+
+                cleanOAuthQuery();
+
+                return true;
+            }
+
+            const savedState =
+                sessionStorage.getItem(
+                    OAUTH_STATE_KEY
+                );
+
+            const codeVerifier =
+                sessionStorage.getItem(
+                    OAUTH_VERIFIER_KEY
+                );
+
+            if (
+                !savedState ||
+                !codeVerifier ||
+                returnedState !== savedState
+            ) {
+
+                clearOAuthStorage();
+
+                cleanOAuthQuery();
+
+                showToast(
+                    "OAuth stateの検証に失敗しました。",
+                    "error"
+                );
+
+                return true;
             }
 
             try {
-                await db.collection("artifacts").doc(APP_ID).collection("links").add({
-                    shortId: shortId, longUrl: longUrl, authorUid: currentUser.uid, clicks: 0, isGuest: currentUser.isGuest, expiresAt: expiresAt, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                document.getElementById('long-url').value = "";
-                showModal(shortId);
-            } catch (e) { showToast("Error: " + e.message); } finally { btn.disabled = false; btn.innerText = "短縮する"; }
-        }
 
-        function listenLinks() {
-            db.collection("artifacts").doc(APP_ID).collection("links").where("authorUid", "==", currentUser.uid)
-                .onSnapshot(snap => {
-                    var links = [];
-                    snap.forEach(doc => { var d = doc.data(); d.id = doc.id; links.push(d); });
-                    renderLinks(links);
-                });
-        }
+                const response =
+                    await fetch(
+                        `${NOPPO_ID_API}/token`,
+                        {
+                            method: "POST",
 
-        function renderLinks(links) {
-            var list = document.getElementById('links-list');
-            list.innerHTML = "";
-            if (links.length === 0) {
-                list.innerHTML = '<div class="py-24 text-center border-2 border-dashed border-white/40 rounded-[32px] bg-white/20 text-slate-400 font-bold">リンク履歴がありません</div>';
-                document.getElementById('stats-summary').innerText = "0 links";
-                return;
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                redirectUri:
+                                    `${SITE_URL}/`,
+
+                                code,
+
+                                codeVerifier
+                            })
+                        }
+                    );
+
+                let result;
+
+                try {
+                    result =
+                        await response.json();
+                } catch {
+                    throw new Error(
+                        "Noppo IDのToken応答を解析できませんでした。"
+                    );
+                }
+
+                if (
+                    !response.ok ||
+                    !result.ok ||
+                    !result.account
+                ) {
+
+                    throw new Error(
+                        result.error ||
+                        "Noppo IDのログインに失敗しました。"
+                    );
+                }
+
+                if (
+                    typeof result.account.id !== "string" ||
+                    !result.account.id
+                ) {
+                    throw new Error(
+                        "Noppo IDのAccount IDを取得できませんでした。"
+                    );
+                }
+
+                saveNoppoAccount(
+                    result.account
+                );
+
+                cleanOAuthQuery();
+
+                clearOAuthStorage();
+
+                showToast(
+                    `${result.account.username} でログインしました。`,
+                    "success"
+                );
+
+                updateAuthUI();
+
+                await loadHistory();
+
+                return true;
+
+            } catch (error) {
+
+                console.error(
+                    "OAuth callback error:",
+                    error
+                );
+
+                clearOAuthStorage();
+
+                cleanOAuthQuery();
+
+                showToast(
+                    error.message ||
+                    "ログインに失敗しました。",
+                    "error"
+                );
+
+                return true;
             }
-            links.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-            var totalClicks = 0; links.forEach(l => totalClicks += (l.clicks || 0));
-            document.getElementById('stats-summary').innerText = links.length + " links · " + totalClicks + " clicks";
+        }
 
-            links.forEach(link => {
-                var item = document.createElement('div');
-                item.className = "noppo-card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 group animate-in fade-in slide-in-from-bottom-2 duration-500";
-                var shortUrl = SITE_DOMAIN + "/?i=" + link.shortId;
-                item.innerHTML = `
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1"><span class="font-black text-blue-600 text-xl truncate tracking-tight">\${shortUrl}</span></div>
-                        <div class="text-xs text-slate-400 truncate font-bold uppercase tracking-wider">\${link.longUrl}</div>
-                    </div>
-                    <div class="flex items-center gap-8">
-                        <div class="text-right"><p class="text-[9px] text-slate-300 font-black uppercase tracking-[0.2em]">Clicks</p><p class="text-3xl font-black text-slate-800 tracking-tighter">\${link.clicks || 0}</p></div>
-                        <div class="flex gap-2">
-                            <button onclick="copyToClipboard('\${shortUrl}')" class="p-3 text-slate-300 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"><i data-lucide="copy" class="w-5 h-5"></i></button>
-                            <button onclick="deleteLink('\${link.id}')" class="p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                        </div>
-                    </div>`;
-                list.appendChild(item);
-            });
+
+        function cleanOAuthQuery() {
+
+            const url =
+                new URL(location.href);
+
+            url.searchParams.delete("code");
+            url.searchParams.delete("state");
+
+            history.replaceState(
+                {},
+                document.title,
+                url.pathname +
+                url.search +
+                url.hash
+            );
+        }
+
+
+        function logout() {
+
+            clearNoppoAccount();
+
+            showToast(
+                "ログアウトしました。",
+                "success"
+            );
+
+            updateAuthUI();
+
+            renderHistoryEmpty();
+
+            if (historyUnsubscribe) {
+                historyUnsubscribe();
+                historyUnsubscribe = null;
+            }
+        }
+
+
+        /* =========================================================
+           Auth UI
+        ========================================================= */
+
+        function updateAuthUI() {
+
+            if (noppoAccount) {
+
+                userBadge.classList.remove(
+                    "hidden"
+                );
+
+                userBadge.classList.add(
+                    "flex"
+                );
+
+                usernameDisplay.textContent =
+                    noppoAccount.username;
+
+                loginButton.classList.add(
+                    "hidden"
+                );
+
+                logoutButton.classList.remove(
+                    "hidden"
+                );
+
+                refreshHistoryButton.classList.remove(
+                    "hidden"
+                );
+
+                refreshHistoryButton.classList.add(
+                    "flex"
+                );
+
+                historyDescription.textContent =
+                    "Noppo IDで作成したリンクを管理できます。";
+
+            } else {
+
+                userBadge.classList.add(
+                    "hidden"
+                );
+
+                userBadge.classList.remove(
+                    "flex"
+                );
+
+                loginButton.classList.remove(
+                    "hidden"
+                );
+
+                logoutButton.classList.add(
+                    "hidden"
+                );
+
+                refreshHistoryButton.classList.add(
+                    "hidden"
+                );
+
+                refreshHistoryButton.classList.remove(
+                    "flex"
+                );
+
+                historyDescription.textContent =
+                    "Noppo IDでログインすると表示されます。";
+            }
+
             lucide.createIcons();
         }
 
-        async function deleteLink(id) { if (confirm("削除しますか？")) await db.collection("artifacts").doc(APP_ID).collection("links").doc(id).delete(); }
-        function showModal(id) { document.getElementById('result-short-url').innerText = SITE_DOMAIN + "/?i=" + id; document.getElementById('detail-modal').classList.remove('hidden'); lucide.createIcons(); }
-        function closeModal() { document.getElementById('detail-modal').classList.add('hidden'); }
-        function copyToClipboard(t) { var text = t || document.getElementById('result-short-url').innerText; navigator.clipboard.writeText(text).then(() => showToast("コピーしました")); }
-        function showToast(m) { var t = document.getElementById('toast'); t.innerText = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-        function downloadQR() { window.open("https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=" + encodeURIComponent(document.getElementById('result-short-url').innerText)); }
-        function logout() { localStorage.removeItem('noppo_li_user'); window.location.href = AUTH_URL + "/logout?redirect=" + encodeURIComponent(window.location.origin); }
 
-        async function handleRedirect() {
-            var p = new URLSearchParams(window.location.search);
-            var id = p.get('i');
-            if (id && !p.has('ticket')) {
-                await auth.signInAnonymously();
-                var snap = await db.collection("artifacts").doc(APP_ID).collection("links").where("shortId", "==", id).limit(1).get();
-                if (!snap.empty) {
-                    var doc = snap.docs[0]; var data = doc.data();
-                    if (data.expiresAt && new Date() > data.expiresAt.toDate()) { alert("期限切れです"); await doc.ref.delete(); }
-                    else { await doc.ref.update({ clicks: firebase.firestore.FieldValue.increment(1) }); window.location.replace(data.longUrl); return true; }
-                }
-                window.history.replaceState({}, "", window.location.pathname);
+        /* =========================================================
+           Short ID
+        ========================================================= */
+
+        async function shortIdExists(shortId) {
+
+            /*
+             * New documents use shortId as their document ID.
+             * We also check the legacy/query-based structure so
+             * old links remain protected from collisions.
+             */
+
+            const directRef =
+                db
+                    .collection(LINKS_COLLECTION)
+                    .doc(shortId);
+
+            const directSnapshot =
+                await directRef.get();
+
+            if (directSnapshot.exists) {
+                return true;
             }
-            return false;
+
+            const querySnapshot =
+                await db
+                    .collection(LINKS_COLLECTION)
+                    .where(
+                        "shortId",
+                        "==",
+                        shortId
+                    )
+                    .limit(1)
+                    .get();
+
+            return !querySnapshot.empty;
         }
-        window.onload = init;
+
+
+        async function generateUniqueShortId() {
+
+            for (let i = 0; i < 8; i++) {
+
+                const candidate =
+                    randomId(7);
+
+                if (
+                    !(await shortIdExists(
+                        candidate
+                    ))
+                ) {
+                    return candidate;
+                }
+            }
+
+            throw new Error(
+                "短縮IDの生成に失敗しました。もう一度お試しください。"
+            );
+        }
+
+
+        /* =========================================================
+           Create link
+        ========================================================= */
+
+        async function createLink(
+            longUrl,
+            requestedShortId
+        ) {
+
+            await ensureFirebaseAnonymousAuth();
+
+            let shortId =
+                requestedShortId
+                    ? sanitizeCustomId(
+                        requestedShortId
+                    )
+                    : "";
+
+            if (
+                requestedShortId &&
+                !shortId
+            ) {
+                throw new Error(
+                    "カスタムIDが無効です。"
+                );
+            }
+
+            if (shortId) {
+
+                if (
+                    await shortIdExists(
+                        shortId
+                    )
+                ) {
+                    throw new Error(
+                        "そのカスタムIDはすでに使用されています。"
+                    );
+                }
+
+            } else {
+
+                shortId =
+                    await generateUniqueShortId();
+            }
+
+            const isGuest =
+                !noppoAccount;
+
+            const expiresAt =
+                isGuest
+                    ? new Date(
+                        Date.now() +
+                        GUEST_EXPIRATION_MS
+                    )
+                    : null;
+
+            /*
+             * Noppo ID UUID is the service identity.
+             *
+             * It is deliberately NOT:
+             * firebaseUser.uid
+             */
+            const authorUid =
+                noppoAccount
+                    ? noppoAccount.id
+                    : `guest_${randomId(16)}`;
+
+            const linkData = {
+
+                shortId,
+
+                longUrl,
+
+                authorUid,
+
+                clicks: 0,
+
+                isGuest,
+
+                expiresAt:
+                    expiresAt
+                        ? firebase.firestore.Timestamp.fromDate(
+                            expiresAt
+                        )
+                        : null,
+
+                createdAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            /*
+             * Use shortId as document ID for newly created links.
+             * This gives us a second layer of collision protection.
+             */
+            const documentRef =
+                db
+                    .collection(LINKS_COLLECTION)
+                    .doc(shortId);
+
+            /*
+             * Re-check immediately before write.
+             * This protects deterministic document IDs from
+             * normal duplicate creation.
+             */
+            const existing =
+                await documentRef.get();
+
+            if (existing.exists) {
+
+                throw new Error(
+                    "その短縮IDはすでに使用されています。"
+                );
+            }
+
+            await documentRef.set(
+                linkData
+            );
+
+            return {
+                ...linkData,
+                id: documentRef.id
+            };
+        }
+
+
+        /* =========================================================
+           Shorten form
+        ========================================================= */
+
+        async function handleShorten(event) {
+
+            event.preventDefault();
+
+            const longUrl =
+                longUrlInput.value.trim();
+
+            const customId =
+                sanitizeCustomId(
+                    customIdInput.value.trim()
+                );
+
+            if (
+                !isValidHttpUrl(longUrl)
+            ) {
+
+                showToast(
+                    "http:// または https:// のURLを入力してください。",
+                    "error"
+                );
+
+                longUrlInput.focus();
+
+                return;
+            }
+
+            if (
+                customIdInput.value.trim() &&
+                !customId
+            ) {
+
+                showToast(
+                    "カスタムIDに使用できない文字が含まれています。",
+                    "error"
+                );
+
+                customIdInput.focus();
+
+                return;
+            }
+
+            setButtonLoading(
+                shortenButton,
+                true,
+                "短縮中..."
+            );
+
+            try {
+
+                const link =
+                    await createLink(
+                        longUrl,
+                        customId
+                    );
+
+                const shortUrl =
+                    `${SITE_URL}/?i=${encodeURIComponent(
+                        link.shortId
+                    )}`;
+
+                currentShortUrl =
+                    shortUrl;
+
+                resultUrl.value =
+                    shortUrl;
+
+                resultArea.classList.remove(
+                    "hidden"
+                );
+
+                customIdInput.value = "";
+
+                showToast(
+                    "URLを短縮しました。",
+                    "success"
+                );
+
+                if (noppoAccount) {
+                    await loadHistory();
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Create link error:",
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    "URLの短縮に失敗しました。",
+                    "error"
+                );
+
+            } finally {
+
+                setButtonLoading(
+                    shortenButton,
+                    false
+                );
+            }
+        }
+
+
+        /* =========================================================
+           Copy
+        ========================================================= */
+
+        async function copyText(text) {
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    text
+                );
+
+                showToast(
+                    "コピーしました。",
+                    "success"
+                );
+
+            } catch {
+
+                /*
+                 * Fallback for older browser environments.
+                 */
+                const textarea =
+                    document.createElement("textarea");
+
+                textarea.value = text;
+
+                textarea.style.position =
+                    "fixed";
+
+                textarea.style.opacity =
+                    "0";
+
+                document.body.appendChild(
+                    textarea
+                );
+
+                textarea.select();
+
+                document.execCommand(
+                    "copy"
+                );
+
+                textarea.remove();
+
+                showToast(
+                    "コピーしました。",
+                    "success"
+                );
+            }
+        }
+
+
+        /* =========================================================
+           QR
+        ========================================================= */
+
+        function showQr(url) {
+
+            if (!url) {
+                return;
+            }
+
+            /*
+             * External QR generator.
+             */
+            const encoded =
+                encodeURIComponent(url);
+
+            qrImage.src =
+                `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encoded}`;
+
+            qrUrl.textContent =
+                url;
+
+            qrModal.classList.remove(
+                "hidden"
+            );
+
+            document.body.style.overflow =
+                "hidden";
+        }
+
+
+        function hideQr() {
+
+            qrModal.classList.add(
+                "hidden"
+            );
+
+            document.body.style.overflow =
+                "";
+        }
+
+
+        /* =========================================================
+           History
+        ========================================================= */
+
+        function renderHistoryEmpty(
+            message = "作成したリンクはまだありません。"
+        ) {
+
+            historyList.innerHTML = `
+                <div class="py-12 text-center">
+                    <div class="empty-icon">
+                        <i data-lucide="link-2-off" class="w-6 h-6"></i>
+                    </div>
+
+                    <p class="font-bold text-slate-700">
+                        ${escapeHtml(message)}
+                    </p>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        URLを短縮するとここに表示されます。
+                    </p>
+                </div>
+            `;
+
+            lucide.createIcons();
+        }
+
+
+        function renderLoginRequired() {
+
+            historyList.innerHTML = `
+                <div class="py-12 text-center">
+                    <div class="empty-icon">
+                        <i data-lucide="log-in" class="w-6 h-6"></i>
+                    </div>
+
+                    <p class="font-bold text-slate-700">
+                        Noppo IDでログインしてください
+                    </p>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        ログインすると自分が作成したリンクを確認できます。
+                    </p>
+
+                    <button
+                        id="historyLoginButton"
+                        type="button"
+                        class="btn-primary mt-5 inline-flex items-center gap-2"
+                    >
+                        <i data-lucide="key-round" class="w-4 h-4"></i>
+                        Noppo IDでログイン
+                    </button>
+                </div>
+            `;
+
+            lucide.createIcons();
+
+            const button =
+                $("historyLoginButton");
+
+            if (button) {
+                button.addEventListener(
+                    "click",
+                    startNoppoLogin
+                );
+            }
+        }
+
+
+        function createHistoryCard(
+            link
+        ) {
+
+            const card =
+                document.createElement("article");
+
+            card.className =
+                "link-card rounded-2xl border border-slate-200 bg-white p-4 mb-3";
+
+            const shortUrl =
+                `${SITE_URL}/?i=${encodeURIComponent(
+                    link.shortId
+                )}`;
+
+            const expiresText =
+                link.expiresAt
+                    ? `有効期限: ${formatDate(
+                        link.expiresAt
+                    )}`
+                    : "有効期限なし";
+
+            card.innerHTML = `
+                <div class="flex items-start justify-between gap-4">
+
+                    <div class="min-w-0 flex-1">
+
+                        <div class="flex items-center gap-2 mb-2">
+
+                            <span
+                                class="inline-flex items-center px-2 py-1 rounded-lg bg-blue-50 text-[#0040e0] text-xs font-extrabold"
+                            >
+                                /?i=${escapeHtml(
+                                    link.shortId
+                                )}
+                            </span>
+
+                            ${
+                                link.isGuest
+                                    ? `
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold"
+                                        >
+                                            Guest
+                                        </span>
+                                    `
+                                    : `
+                                        <span
+                                            class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold"
+                                        >
+                                            Noppo ID
+                                        </span>
+                                    `
+                            }
+
+                        </div>
+
+                        <a
+                            href="${escapeHtml(shortUrl)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="block font-bold text-[#0040e0] hover:underline break-all mb-1"
+                        >
+                            ${escapeHtml(shortUrl)}
+                        </a>
+
+                        <div
+                            class="text-sm text-slate-500 break-all mb-3"
+                            title="${escapeHtml(
+                                link.longUrl
+                            )}"
+                        >
+                            ${escapeHtml(
+                                link.longUrl
+                            )}
+                        </div>
+
+                        <div
+                            class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400"
+                        >
+                            <span class="inline-flex items-center gap-1">
+                                <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5"></i>
+                                ${Number(
+                                    link.clicks || 0
+                                )} クリック
+                            </span>
+
+                            <span class="inline-flex items-center gap-1">
+                                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                ${formatDate(
+                                    link.createdAt
+                                )}
+                            </span>
+
+                            <span class="inline-flex items-center gap-1">
+                                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                ${escapeHtml(
+                                    expiresText
+                                )}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="flex shrink-0 gap-2">
+
+                        <button
+                            type="button"
+                            class="history-copy btn-secondary !p-2"
+                            title="コピー"
+                            data-url="${escapeHtml(shortUrl)}"
+                        >
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="history-qr btn-secondary !p-2"
+                            title="QR"
+                            data-url="${escapeHtml(shortUrl)}"
+                        >
+                            <i data-lucide="qr-code" class="w-4 h-4"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="history-delete btn-danger !p-2"
+                            title="削除"
+                            data-id="${escapeHtml(
+                                link.id
+                            )}"
+                        >
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+            const copy =
+                card.querySelector(
+                    ".history-copy"
+                );
+
+            const qr =
+                card.querySelector(
+                    ".history-qr"
+                );
+
+            const del =
+                card.querySelector(
+                    ".history-delete"
+                );
+
+            copy.addEventListener(
+                "click",
+                () => copyText(shortUrl)
+            );
+
+            qr.addEventListener(
+                "click",
+                () => showQr(shortUrl)
+            );
+
+            del.addEventListener(
+                "click",
+                () =>
+                    deleteLink(
+                        link.id,
+                        del
+                    )
+            );
+
+            return card;
+        }
+
+
+        async function loadHistory() {
+
+            if (!noppoAccount) {
+
+                renderLoginRequired();
+
+                return;
+            }
+
+            if (historyUnsubscribe) {
+
+                historyUnsubscribe();
+
+                historyUnsubscribe =
+                    null;
+            }
+
+            historyList.innerHTML = `
+                <div class="py-10 flex justify-center">
+                    <div
+                        class="w-7 h-7 rounded-full border-2 border-slate-200 border-t-[#0040e0] animate-spin"
+                    ></div>
+                </div>
+            `;
+
+            try {
+
+                /*
+                 * IMPORTANT:
+                 * authorUid is Noppo ID account.id.
+                 *
+                 * It is NOT firebaseUser.uid.
+                 */
+                const query =
+                    db
+                        .collection(
+                            LINKS_COLLECTION
+                        )
+                        .where(
+                            "authorUid",
+                            "==",
+                            noppoAccount.id
+                        )
+                        .orderBy(
+                            "createdAt",
+                            "desc"
+                        );
+
+                historyUnsubscribe =
+                    query.onSnapshot(
+                        snapshot => {
+
+                            historyList.innerHTML =
+                                "";
+
+                            if (
+                                snapshot.empty
+                            ) {
+
+                                renderHistoryEmpty();
+
+                                return;
+                            }
+
+                            snapshot.forEach(
+                                doc => {
+
+                                    const link = {
+                                        id: doc.id,
+                                        ...doc.data()
+                                    };
+
+                                    historyList.appendChild(
+                                        createHistoryCard(
+                                            link
+                                        )
+                                    );
+                                }
+                            );
+
+                            lucide.createIcons();
+                        },
+
+                        error => {
+
+                            console.error(
+                                "History listener error:",
+                                error
+                            );
+
+                            /*
+                             * If an index/orderBy issue occurs,
+                             * fall back to a simple query.
+                             */
+                            loadHistoryFallback();
+                        }
+                    );
+
+            } catch (error) {
+
+                console.error(
+                    "History error:",
+                    error
+                );
+
+                await loadHistoryFallback();
+            }
+        }
+
+
+        async function loadHistoryFallback() {
+
+            if (!noppoAccount) {
+                renderLoginRequired();
+                return;
+            }
+
+            try {
+
+                const snapshot =
+                    await db
+                        .collection(
+                            LINKS_COLLECTION
+                        )
+                        .where(
+                            "authorUid",
+                            "==",
+                            noppoAccount.id
+                        )
+                        .get();
+
+                const links =
+                    snapshot.docs
+                        .map(doc => ({
+                            id: doc.id,
+                            ...doc.data()
+                        }))
+                        .sort(
+                            (a, b) => {
+
+                                const aTime =
+                                    a.createdAt?.toMillis
+                                        ? a.createdAt.toMillis()
+                                        : 0;
+
+                                const bTime =
+                                    b.createdAt?.toMillis
+                                        ? b.createdAt.toMillis()
+                                        : 0;
+
+                                return bTime - aTime;
+                            }
+                        );
+
+                historyList.innerHTML =
+                    "";
+
+                if (!links.length) {
+
+                    renderHistoryEmpty();
+
+                    return;
+                }
+
+                for (const link of links) {
+
+                    historyList.appendChild(
+                        createHistoryCard(
+                            link
+                        )
+                    );
+                }
+
+                lucide.createIcons();
+
+            } catch (error) {
+
+                console.error(
+                    "History fallback error:",
+                    error
+                );
+
+                historyList.innerHTML = `
+                    <div class="py-10 text-center">
+                        <div class="empty-icon">
+                            <i data-lucide="triangle-alert" class="w-6 h-6"></i>
+                        </div>
+
+                        <p class="font-bold text-red-700">
+                            履歴を取得できませんでした
+                        </p>
+
+                        <p class="text-sm text-slate-500 mt-1">
+                            Firestoreの権限設定またはインデックスを確認してください。
+                        </p>
+                    </div>
+                `;
+
+                lucide.createIcons();
+            }
+        }
+
+
+        /* =========================================================
+           Delete
+        ========================================================= */
+
+        async function deleteLink(
+            documentId,
+            button
+        ) {
+
+            if (!noppoAccount) {
+
+                showToast(
+                    "ログインが必要です。",
+                    "error"
+                );
+
+                return;
+            }
+
+            const confirmed =
+                window.confirm(
+                    "この短縮URLを削除しますか？\n\n削除すると元に戻せません。"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+            if (button) {
+
+                button.disabled =
+                    true;
+
+                button.innerHTML = `
+                    <span
+                        class="inline-block w-4 h-4 border-2 border-red-200 border-t-red-600 rounded-full animate-spin"
+                    ></span>
+                `;
+            }
+
+            try {
+
+                const ref =
+                    db
+                        .collection(
+                            LINKS_COLLECTION
+                        )
+                        .doc(documentId);
+
+                /*
+                 * Read first so we can verify ownership
+                 * using Noppo ID UUID.
+                 */
+                const snapshot =
+                    await ref.get();
+
+                if (!snapshot.exists) {
+
+                    showToast(
+                        "リンクはすでに削除されています。",
+                        "info"
+                    );
+
+                    return;
+                }
+
+                const data =
+                    snapshot.data();
+
+                if (
+                    data.authorUid !==
+                    noppoAccount.id
+                ) {
+
+                    throw new Error(
+                        "このリンクを削除する権限がありません。"
+                    );
+                }
+
+                await ref.delete();
+
+                showToast(
+                    "リンクを削除しました。",
+                    "success"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Delete error:",
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    "リンクの削除に失敗しました。",
+                    "error"
+                );
+
+                if (button) {
+                    button.disabled =
+                        false;
+
+                    button.innerHTML = `
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    `;
+
+                    lucide.createIcons();
+                }
+
+            } finally {
+
+                /*
+                 * onSnapshot will update the UI.
+                 */
+            }
+        }
+
+
+        /* =========================================================
+           Link resolution
+        ========================================================= */
+
+        async function resolveShortLink() {
+
+            const params =
+                new URLSearchParams(
+                    location.search
+                );
+
+            const shortId =
+                params.get("i");
+
+            if (!shortId) {
+                return false;
+            }
+
+            try {
+
+                let snapshot;
+
+                /*
+                 * New links:
+                 * document ID === shortId
+                 */
+                const directRef =
+                    db
+                        .collection(
+                            LINKS_COLLECTION
+                        )
+                        .doc(shortId);
+
+                const directSnapshot =
+                    await directRef.get();
+
+                if (
+                    directSnapshot.exists
+                ) {
+
+                    snapshot =
+                        directSnapshot;
+
+                } else {
+
+                    /*
+                     * Legacy links:
+                     * document ID may be random.
+                     */
+                    const querySnapshot =
+                        await db
+                            .collection(
+                                LINKS_COLLECTION
+                            )
+                            .where(
+                                "shortId",
+                                "==",
+                                shortId
+                            )
+                            .limit(1)
+                            .get();
+
+                    if (
+                        querySnapshot.empty
+                    ) {
+
+                        showNotFound(
+                            "短縮URLが見つかりません。"
+                        );
+
+                        return true;
+                    }
+
+                    snapshot =
+                        querySnapshot.docs[0];
+                }
+
+                const link =
+                    snapshot.data();
+
+                /*
+                 * Guest expiration.
+                 */
+                if (
+                    link.expiresAt
+                ) {
+
+                    const expiration =
+                        link.expiresAt.toDate
+                            ? link.expiresAt.toDate()
+                            : new Date(
+                                link.expiresAt
+                            );
+
+                    if (
+                        expiration.getTime() <=
+                        Date.now()
+                    ) {
+
+                        /*
+                         * Expired links can be removed.
+                         */
+                        try {
+                            await snapshot.ref.delete();
+                        } catch (deleteError) {
+                            console.warn(
+                                "Expired link cleanup failed:",
+                                deleteError
+                            );
+                        }
+
+                        showNotFound(
+                            "この短縮URLは有効期限切れです。"
+                        );
+
+                        return true;
+                    }
+                }
+
+                /*
+                 * Increment click count.
+                 */
+                try {
+
+                    await snapshot.ref.update({
+                        clicks:
+                            firebase.firestore.FieldValue.increment(
+                                1
+                            )
+                    });
+
+                } catch (clickError) {
+
+                    console.warn(
+                        "Click counter update failed:",
+                        clickError
+                    );
+                }
+
+                if (
+                    !isValidHttpUrl(
+                        link.longUrl
+                    )
+                ) {
+
+                    showNotFound(
+                        "転送先URLが不正です。"
+                    );
+
+                    return true;
+                }
+
+                /*
+                 * Do not expose an intermediate page
+                 * unless something fails.
+                 */
+                location.replace(
+                    link.longUrl
+                );
+
+                return true;
+
+            } catch (error) {
+
+                console.error(
+                    "Resolve error:",
+                    error
+                );
+
+                showNotFound(
+                    "短縮URLの取得に失敗しました。"
+                );
+
+                return true;
+            }
+        }
+
+
+        function showNotFound(message) {
+
+            document.body.innerHTML = `
+                <main
+                    class="min-h-screen flex items-center justify-center px-5 py-10"
+                >
+                    <section
+                        class="glass shadow-soft rounded-3xl p-8 max-w-md w-full text-center"
+                    >
+
+                        <div class="empty-icon">
+                            <i data-lucide="link-2-off" class="w-7 h-7"></i>
+                        </div>
+
+                        <h1 class="text-2xl font-extrabold mb-2">
+                            短縮URLが見つかりません
+                        </h1>
+
+                        <p class="text-slate-500 leading-7 mb-6">
+                            ${escapeHtml(message)}
+                        </p>
+
+                        <a
+                            href="${SITE_URL}/"
+                            class="btn-primary inline-flex items-center gap-2"
+                        >
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            NoppoLIへ戻る
+                        </a>
+
+                    </section>
+                </main>
+            `;
+
+            lucide.createIcons();
+        }
+
+
+        /* =========================================================
+           Events
+        ========================================================= */
+
+        loginButton.addEventListener(
+            "click",
+            startNoppoLogin
+        );
+
+        logoutButton.addEventListener(
+            "click",
+            logout
+        );
+
+        shortenForm.addEventListener(
+            "submit",
+            handleShorten
+        );
+
+        customIdInput.addEventListener(
+            "input",
+            () => {
+
+                const sanitized =
+                    sanitizeCustomId(
+                        customIdInput.value
+                    );
+
+                if (
+                    customIdInput.value !==
+                    sanitized
+                ) {
+                    customIdInput.value =
+                        sanitized;
+                }
+            }
+        );
+
+        copyButton.addEventListener(
+            "click",
+            () => {
+
+                if (currentShortUrl) {
+                    copyText(
+                        currentShortUrl
+                    );
+                }
+            }
+        );
+
+        qrButton.addEventListener(
+            "click",
+            () => {
+
+                if (currentShortUrl) {
+                    showQr(
+                        currentShortUrl
+                    );
+                }
+            }
+        );
+
+        closeQrButton.addEventListener(
+            "click",
+            hideQr
+        );
+
+        qrModal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    qrModal
+                ) {
+                    hideQr();
+                }
+            }
+        );
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Escape"
+                ) {
+                    hideQr();
+                }
+            }
+        );
+
+        refreshHistoryButton.addEventListener(
+            "click",
+            async () => {
+
+                await loadHistory();
+
+                showToast(
+                    "履歴を更新しました。",
+                    "success"
+                );
+            }
+        );
+
+
+        /* =========================================================
+           Firebase Auth State
+        ========================================================= */
+
+        auth.onAuthStateChanged(
+            user => {
+
+                firebaseUser =
+                    user || null;
+            }
+        );
+
+
+        /* =========================================================
+           Initialization
+        ========================================================= */
+
+        async function init() {
+
+            lucide.createIcons();
+
+            /*
+             * Resolve ?i= first.
+             * This prevents the application UI from flashing
+             * before redirecting.
+             */
+            const params =
+                new URLSearchParams(
+                    location.search
+                );
+
+            if (
+                params.has("i")
+            ) {
+
+                await ensureFirebaseAnonymousAuth();
+
+                const handled =
+                    await resolveShortLink();
+
+                if (handled) {
+                    return;
+                }
+            }
+
+            /*
+             * OAuth callback.
+             */
+            const oauthHandled =
+                await handleOAuthCallback();
+
+            if (oauthHandled) {
+                updateAuthUI();
+
+                if (noppoAccount) {
+                    await loadHistory();
+                }
+
+                return;
+            }
+
+            /*
+             * Restore Noppo ID account identity.
+             *
+             * This does not restore an Noppo ID server-side
+             * session. It restores the account identifier used
+             * by this service.
+             */
+            noppoAccount =
+                loadNoppoAccount();
+
+            await ensureFirebaseAnonymousAuth();
+
+            updateAuthUI();
+
+            if (noppoAccount) {
+                await loadHistory();
+            } else {
+                renderLoginRequired();
+            }
+        }
+
+        init();
+
     </script>
+
 </body>
 </html>
