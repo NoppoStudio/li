@@ -3,51 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f8ff">
 
-  <title>NoppoLI — Link Intelligence</title>
-  <meta name="description" content="NoppoStudioの高速・シンプルなURL短縮サービス NoppoLI">
-  <meta name="theme-color" content="#0040e0">
+  <title>NoppoLI — URL Shortener</title>
+  <meta
+    name="description"
+    content="長いURLを、短く。シンプルで使いやすいURL短縮サービス。"
+  >
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
   >
 
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: [
-              "Plus Jakarta Sans",
-              "Noto Sans JP",
-              "sans-serif"
-            ]
-          }
-        }
-      }
-    };
-  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     :root {
       --blue: #0040e0;
-      --blue-2: #1557ff;
-      --blue-soft: #eaf1ff;
+      --blue-hover: #0034b8;
+      --blue-soft: #eaf0ff;
       --ink: #07152f;
-      --muted: #64748b;
+      --muted: #66738d;
       --line: #dce5f5;
-      --surface: #ffffff;
-      --surface-soft: #f6f9ff;
       --bg: #f4f8ff;
-      --danger: #dc2626;
-      --success: #0f9d68;
-      --shadow: 0 18px 60px rgba(20, 53, 120, .10);
-      --shadow-sm: 0 8px 30px rgba(20, 53, 120, .08);
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-solid: #ffffff;
+      --success: #16834a;
+      --danger: #d83b4b;
+      --shadow: 0 20px 60px rgba(27, 58, 115, 0.10);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
     }
 
     * {
@@ -60,24 +49,18 @@
 
     body {
       margin: 0;
+      min-height: 100vh;
       color: var(--ink);
       background:
-        radial-gradient(
-          circle at 10% 0%,
-          rgba(0, 64, 224, .08),
-          transparent 28%
-        ),
-        radial-gradient(
-          circle at 90% 10%,
-          rgba(73, 143, 255, .08),
-          transparent 25%
-        ),
-        var(--bg);
+        radial-gradient(circle at 50% -10%, rgba(0, 64, 224, 0.10), transparent 38%),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
       font-family:
         "Plus Jakarta Sans",
         "Noto Sans JP",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
         sans-serif;
-      min-height: 100vh;
     }
 
     button,
@@ -86,142 +69,116 @@
     }
 
     button {
-      cursor: pointer;
+      border: 0;
     }
 
-    ::selection {
-      background: rgba(0, 64, 224, .16);
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
-    .page-shell {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    .glass {
-      background: rgba(255,255,255,.78);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(220,229,245,.82);
-      box-shadow: var(--shadow);
-    }
+    /* ================================
+       Header
+    ================================ */
 
-    .nav {
+    header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(244,248,255,.76);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(220,229,245,.72);
+      height: 72px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(220, 229, 245, 0.7);
+      background: rgba(248, 251, 255, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
 
-    .nav-inner {
-      min-height: 74px;
+    .header-inner {
+      width: min(1120px, calc(100% - 36px));
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
     }
 
     .brand {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--ink);
+      gap: 11px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
     }
 
     .brand-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 13px;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
       display: grid;
       place-items: center;
       color: white;
-      background:
-        linear-gradient(145deg, #1557ff, #0034c7);
-      box-shadow:
-        0 10px 24px rgba(0,64,224,.25);
+      background: linear-gradient(145deg, #1760ff, #0033c7);
+      box-shadow: 0 8px 20px rgba(0, 64, 224, 0.24);
       font-size: 18px;
       font-weight: 800;
-      letter-spacing: -1px;
-    }
-
-    .brand-text {
-      line-height: 1;
     }
 
     .brand-name {
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -.5px;
+      font-size: 17px;
     }
 
     .brand-sub {
-      margin-top: 5px;
-      color: #7b8aa5;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .12em;
-      text-transform: uppercase;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-left: 2px;
     }
 
-    .nav-actions {
+    .header-right {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
     }
 
-    .icon-btn,
-    .account-btn {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.82);
-      color: var(--ink);
-      transition: .2s ease;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      transition: 0.2s ease;
     }
 
-    .icon-btn:hover,
-    .account-btn:hover {
-      border-color: #b7c9ed;
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-sm);
+    .icon-button:hover {
+      color: var(--ink);
+      background: rgba(0, 64, 224, 0.07);
     }
 
-    .account-btn {
-      min-height: 42px;
-      padding: 0 15px;
-      border-radius: 13px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      font-size: 13px;
-      font-weight: 700;
-    }
+    /* ================================
+       Main
+    ================================ */
 
-    .account-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #94a3b8;
-    }
-
-    .account-dot.online {
-      background: #18a96d;
-      box-shadow: 0 0 0 4px rgba(24,169,109,.10);
+    main {
+      flex: 1;
+      width: min(1120px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 74px 0 90px;
     }
 
     .hero {
-      padding: 78px 0 36px;
       text-align: center;
+      max-width: 780px;
+      margin: 0 auto 42px;
     }
 
     .eyebrow {
@@ -229,29 +186,22 @@
       align-items: center;
       gap: 7px;
       padding: 7px 11px;
+      border: 1px solid #d8e3fb;
       border-radius: 999px;
+      background: rgba(255, 255, 255, 0.76);
       color: var(--blue);
-      background: rgba(0,64,224,.07);
-      border: 1px solid rgba(0,64,224,.10);
       font-size: 11px;
       font-weight: 800;
-      letter-spacing: .08em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-    }
-
-    .eyebrow-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--blue);
+      box-shadow: 0 5px 18px rgba(30, 65, 130, 0.05);
     }
 
     .hero h1 {
-      margin: 20px auto 0;
-      max-width: 820px;
-      font-size: clamp(38px, 6vw, 72px);
-      line-height: 1.02;
-      letter-spacing: -.055em;
+      margin: 20px 0 14px;
+      font-size: clamp(38px, 7vw, 66px);
+      line-height: 1.08;
+      letter-spacing: -0.055em;
       font-weight: 800;
     }
 
@@ -260,624 +210,268 @@
     }
 
     .hero p {
-      max-width: 650px;
-      margin: 20px auto 0;
-      color: #687891;
+      margin: 0 auto;
+      color: var(--muted);
       font-size: 15px;
-      line-height: 1.9;
+      line-height: 1.8;
+      max-width: 580px;
     }
 
-    .workspace {
-      margin: 22px auto 0;
-      max-width: 900px;
-    }
+    /* ================================
+       Shortener card
+    ================================ */
 
     .shortener-card {
-      padding: 11px;
-      border-radius: 24px;
+      width: min(800px, 100%);
+      margin: 0 auto;
+      padding: 10px;
+      border: 1px solid rgba(220, 229, 245, 0.9);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
 
-    .url-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
+    .input-area {
+      padding: 24px 24px 14px;
     }
 
-    .url-input-wrap {
+    .field-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 9px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .field-label span:last-child {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .input-wrap {
       position: relative;
     }
 
     .url-input {
       width: 100%;
-      min-height: 62px;
-      padding: 0 20px;
-      border-radius: 17px;
+      height: 58px;
+      padding: 0 18px 0 48px;
       border: 1px solid var(--line);
+      border-radius: var(--radius-md);
       outline: none;
       color: var(--ink);
-      background: #f9fbff;
-      font-size: 15px;
-      transition: .2s ease;
+      background: #fbfdff;
+      transition: 0.2s ease;
+      font-size: 14px;
     }
 
     .url-input::placeholder {
-      color: #9aa8be;
+      color: #9ba7bc;
     }
 
     .url-input:focus {
-      border-color: rgba(0,64,224,.55);
-      box-shadow: 0 0 0 4px rgba(0,64,224,.08);
+      border-color: rgba(0, 64, 224, 0.45);
+      box-shadow: 0 0 0 4px rgba(0, 64, 224, 0.08);
       background: white;
     }
 
-    .primary-btn {
-      min-height: 62px;
-      padding: 0 25px;
-      border: 0;
-      border-radius: 17px;
-      color: white;
-      background:
-        linear-gradient(135deg, #1557ff, #0037c8);
-      font-weight: 800;
-      box-shadow:
-        0 12px 25px rgba(0,64,224,.23);
-      transition: .2s ease;
-      white-space: nowrap;
+    .input-icon {
+      position: absolute;
+      left: 17px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8090aa;
+      pointer-events: none;
     }
 
-    .primary-btn:hover {
-      transform: translateY(-2px);
-      box-shadow:
-        0 16px 30px rgba(0,64,224,.28);
+    .custom-section {
+      margin-top: 18px;
+      padding: 15px 16px;
+      border: 1px solid #e4ebf7;
+      border-radius: 16px;
+      background: #f8faff;
     }
 
-    .primary-btn:active {
-      transform: translateY(0);
-    }
-
-    .primary-btn:disabled {
-      cursor: not-allowed;
-      opacity: .6;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .advanced-row {
+    .custom-toggle {
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 15px;
-      padding: 13px 7px 2px;
+      gap: 14px;
+      cursor: pointer;
+      user-select: none;
     }
 
-    .advanced-label {
+    .custom-toggle-left {
       display: flex;
       align-items: center;
-      gap: 8px;
-      color: #72819a;
-      font-size: 12px;
+      gap: 11px;
+    }
+
+    .toggle-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .custom-title {
+      font-size: 13px;
       font-weight: 700;
     }
 
-    .toggle {
-      position: relative;
-      width: 42px;
-      height: 24px;
-      border: 0;
-      border-radius: 999px;
-      background: #d7dfec;
-      transition: .2s;
+    .custom-description {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 500;
     }
 
-    .toggle::after {
+    .switch {
+      width: 44px;
+      height: 25px;
+      padding: 3px;
+      border-radius: 999px;
+      background: #d3ddec;
+      transition: 0.2s ease;
+      flex: 0 0 auto;
+    }
+
+    .switch::after {
       content: "";
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      left: 3px;
-      top: 3px;
+      display: block;
+      width: 19px;
+      height: 19px;
       border-radius: 50%;
       background: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,.15);
-      transition: .2s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.14);
+      transition: 0.2s ease;
     }
 
-    .toggle.active {
+    .switch.active {
       background: var(--blue);
     }
 
-    .toggle.active::after {
-      transform: translateX(18px);
+    .switch.active::after {
+      transform: translateX(19px);
     }
 
-    .custom-panel {
+    .custom-input-area {
       display: none;
-      margin-top: 10px;
-      padding: 14px;
-      border-radius: 17px;
-      background: #f5f8ff;
-      border: 1px solid var(--line);
-      text-align: left;
+      margin-top: 13px;
     }
 
-    .custom-panel.visible {
+    .custom-input-area.show {
       display: block;
-    }
-
-    .custom-panel label {
-      display: block;
-      margin-bottom: 7px;
-      color: #62718a;
-      font-size: 11px;
-      font-weight: 800;
     }
 
     .custom-input {
       width: 100%;
-      min-height: 48px;
+      height: 48px;
       padding: 0 14px;
-      border-radius: 12px;
       border: 1px solid var(--line);
+      border-radius: 12px;
       outline: none;
+      color: var(--ink);
       background: white;
+      font-size: 13px;
+      transition: 0.2s ease;
     }
 
     .custom-input:focus {
-      border-color: rgba(0,64,224,.45);
-      box-shadow: 0 0 0 3px rgba(0,64,224,.07);
+      border-color: rgba(0, 64, 224, 0.45);
+      box-shadow: 0 0 0 4px rgba(0, 64, 224, 0.07);
     }
 
-    .custom-hint {
+    .custom-help {
       margin-top: 7px;
-      color: #8996aa;
+      color: var(--muted);
       font-size: 10px;
+      line-height: 1.6;
     }
 
-    .result-wrap {
-      display: none;
-      margin-top: 16px;
-      text-align: left;
+    .action-area {
+      padding: 10px 14px 14px;
     }
 
-    .result-wrap.visible {
-      display: block;
-      animation: rise .35s ease both;
-    }
-
-    .result-card {
-      padding: 20px;
-      border-radius: 22px;
-      border: 1px solid rgba(0,64,224,.12);
-      background:
-        linear-gradient(135deg, #f7faff, #ffffff);
-    }
-
-    .result-top {
+    .shorten-button {
+      width: 100%;
+      height: 56px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-    }
-
-    .result-label {
-      color: #7c8ba4;
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-    }
-
-    .result-url {
-      margin-top: 6px;
-      color: var(--blue);
-      font-size: 20px;
-      font-weight: 800;
-      word-break: break-all;
-    }
-
-    .result-original {
-      margin-top: 5px;
-      color: #7a889e;
-      font-size: 11px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .result-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 15px;
-    }
-
-    .soft-btn {
-      min-height: 42px;
-      padding: 0 13px;
-      border-radius: 11px;
-      border: 1px solid var(--line);
-      background: white;
-      color: #263653;
-      font-size: 12px;
-      font-weight: 800;
-      transition: .2s;
-    }
-
-    .soft-btn:hover {
-      border-color: #b7c9ed;
-      transform: translateY(-1px);
-    }
-
-    .soft-btn.primary-soft {
-      color: var(--blue);
-      background: var(--blue-soft);
-      border-color: #d5e2ff;
-    }
-
-    .section-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 13px;
-      margin: 24px auto 0;
-      max-width: 900px;
-    }
-
-    .stat-card {
-      padding: 19px;
-      border-radius: 19px;
-      text-align: left;
-    }
-
-    .stat-label {
-      color: #7d8ba2;
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .09em;
-    }
-
-    .stat-value {
-      margin-top: 8px;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -.04em;
-    }
-
-    .stat-description {
-      margin-top: 3px;
-      color: #8b98ac;
-      font-size: 10px;
-    }
-
-    .history-section {
-      margin: 68px auto 120px;
-      max-width: 900px;
-    }
-
-    .section-heading {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 15px;
-    }
-
-    .section-title {
-      font-size: 23px;
-      font-weight: 800;
-      letter-spacing: -.04em;
-    }
-
-    .section-caption {
-      margin-top: 5px;
-      color: #7a899f;
-      font-size: 11px;
-    }
-
-    .history-card {
-      overflow: hidden;
-      border-radius: 21px;
-    }
-
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 17px 20px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .history-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 9px;
-      border-radius: 999px;
-      background: #eef3fb;
-      color: #63718a;
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .history-status.logged {
-      color: #0d8b5c;
-      background: #e8f8f1;
-    }
-
-    .history-list {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .history-item {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto auto;
-      gap: 18px;
-      align-items: center;
-      padding: 18px 20px;
-      border-bottom: 1px solid #edf1f7;
-      transition: .2s;
-    }
-
-    .history-item:last-child {
-      border-bottom: 0;
-    }
-
-    .history-item:hover {
-      background: #fbfdff;
-    }
-
-    .history-main {
-      min-width: 0;
-    }
-
-    .history-short {
-      color: var(--blue);
-      font-size: 14px;
-      font-weight: 800;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .history-long {
-      margin-top: 4px;
-      color: #8a97aa;
-      font-size: 10px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .history-meta {
-      display: flex;
-      gap: 14px;
-      color: #718096;
-      font-size: 10px;
-      white-space: nowrap;
-    }
-
-    .delete-btn {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border: 1px solid #e7ebf2;
-      border-radius: 10px;
-      background: white;
-      color: #7d899a;
-      transition: .2s;
-    }
-
-    .delete-btn:hover {
-      color: var(--danger);
-      border-color: #fecaca;
-      background: #fff7f7;
-    }
-
-    .empty {
-      padding: 52px 20px;
-      text-align: center;
-      color: #7f8da3;
-    }
-
-    .empty-icon {
-      width: 50px;
-      height: 50px;
-      margin: 0 auto 13px;
-      display: grid;
-      place-items: center;
-      border-radius: 15px;
-      background: #edf3ff;
-      color: var(--blue);
-    }
-
-    .empty-title {
-      color: #30415f;
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .empty-text {
-      margin-top: 5px;
-      font-size: 11px;
-    }
-
-    .footer {
-      padding: 30px 0 100px;
-      color: #8995a8;
-      font-size: 10px;
-      text-align: center;
-    }
-
-    .footer strong {
-      color: #53627a;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      background: rgba(4, 15, 37, .45);
-      backdrop-filter: blur(8px);
-    }
-
-    .modal-backdrop.visible {
-      display: flex;
-      animation: fade .2s ease both;
-    }
-
-    .modal {
-      width: min(440px, 100%);
-      padding: 22px;
-      border-radius: 24px;
-      background: white;
-      box-shadow: 0 30px 90px rgba(0,0,0,.22);
-      animation: rise .25s ease both;
-    }
-
-    .modal-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .modal-title {
-      font-size: 17px;
-      font-weight: 800;
-    }
-
-    .modal-close {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border: 0;
-      border-radius: 10px;
-      background: #f1f4f8;
-      color: #617089;
-    }
-
-    .qr-box {
-      margin: 20px auto 0;
-      width: 260px;
-      height: 260px;
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 17px;
-      display: grid;
-      place-items: center;
-      background: white;
-    }
-
-    .qr-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    .qr-url {
-      margin-top: 12px;
-      text-align: center;
-      color: #65748c;
-      font-size: 11px;
-      word-break: break-all;
-    }
-
-    .toast-container {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 200;
-      display: flex;
-      flex-direction: column;
       gap: 9px;
-      width: min(360px, calc(100% - 40px));
+      border-radius: 15px;
+      color: white;
+      background: linear-gradient(135deg, #0750ec, #0034bd);
+      box-shadow: 0 12px 24px rgba(0, 64, 224, 0.20);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      transition: 0.2s ease;
     }
 
-    .toast {
-      padding: 13px 15px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.94);
-      backdrop-filter: blur(15px);
-      box-shadow: 0 14px 35px rgba(20,53,120,.14);
-      color: #34435d;
-      font-size: 11px;
-      font-weight: 700;
-      animation: slideIn .3s ease both;
+    .shorten-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 15px 28px rgba(0, 64, 224, 0.26);
     }
 
-    .toast.success {
-      border-color: #bcebd7;
+    .shorten-button:active {
+      transform: translateY(0);
     }
 
-    .toast.error {
-      border-color: #fecaca;
-      color: #a52828;
+    .shorten-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+      transform: none;
+      box-shadow: none;
     }
 
-    .login-required {
-      display: none;
-      margin-top: 13px;
-      padding: 12px 14px;
-      border-radius: 13px;
-      background: #fff8e8;
-      border: 1px solid #f5dfab;
-      color: #8a6414;
-      font-size: 11px;
-      line-height: 1.7;
-    }
-
-    .login-required.visible {
-      display: block;
-    }
-
-    .loading {
-      position: relative;
-      color: transparent !important;
-      pointer-events: none;
-    }
-
-    .loading::after {
-      content: "";
-      position: absolute;
-      width: 17px;
-      height: 17px;
-      left: 50%;
-      top: 50%;
-      margin: -8.5px;
-      border: 2px solid rgba(255,255,255,.4);
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
       border-top-color: white;
       border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
-
-    .firebase-warning {
-      display: none;
-      margin-top: 13px;
-      padding: 12px 14px;
-      border-radius: 13px;
-      background: #fff4f4;
-      border: 1px solid #fecaca;
-      color: #9e2b2b;
-      font-size: 11px;
-      line-height: 1.7;
-      text-align: left;
-    }
-
-    .firebase-warning.visible {
-      display: block;
+      animation: spin 0.7s linear infinite;
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
-    @keyframes rise {
+    /* ================================
+       Result
+    ================================ */
+
+    .result-card {
+      display: none;
+      width: min(800px, 100%);
+      margin: 18px auto 0;
+      padding: 22px;
+      border: 1px solid #cfe0ff;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #f8fbff, #eef4ff);
+      box-shadow: 0 12px 35px rgba(31, 69, 137, 0.08);
+    }
+
+    .result-card.show {
+      display: block;
+      animation: resultIn 0.3s ease;
+    }
+
+    @keyframes resultIn {
       from {
         opacity: 0;
         transform: translateY(8px);
@@ -888,139 +482,533 @@
       }
     }
 
-    @keyframes fade {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .result-heading {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      font-weight: 800;
     }
 
-    @keyframes slideIn {
+    .result-check {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      color: var(--success);
+      background: #e3f7ec;
+    }
+
+    .result-url-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px;
+      border: 1px solid #d9e5f7;
+      border-radius: 14px;
+      background: white;
+    }
+
+    .result-url {
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+      padding: 0 8px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 7px;
+    }
+
+    .result-button {
+      height: 40px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: 10px;
+      color: var(--ink);
+      background: #f0f4fb;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: 0.18s ease;
+    }
+
+    .result-button:hover {
+      background: #e6edf9;
+    }
+
+    .result-button.primary {
+      color: white;
+      background: var(--blue);
+    }
+
+    .result-button.primary:hover {
+      background: var(--blue-hover);
+    }
+
+    .result-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* ================================
+       Info
+    ================================ */
+
+    .info-grid {
+      width: min(800px, 100%);
+      margin: 34px auto 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .info-card {
+      padding: 19px;
+      border: 1px solid rgba(220, 229, 245, 0.9);
+      border-radius: 17px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .info-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 11px;
+      border-radius: 10px;
+      color: var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .info-card h3 {
+      margin: 0 0 5px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .info-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.65;
+    }
+
+    /* ================================
+       Footer
+    ================================ */
+
+    footer {
+      width: min(1120px, calc(100% - 36px));
+      margin: auto;
+      padding: 25px 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-top: 1px solid rgba(220, 229, 245, 0.75);
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* ================================
+       QR Modal
+    ================================ */
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(4, 16, 39, 0.42);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(390px, 100%);
+      padding: 25px;
+      border-radius: 24px;
+      background: white;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
+      animation: modalIn 0.22s ease;
+    }
+
+    @keyframes modalIn {
       from {
         opacity: 0;
-        transform: translateX(20px);
+        transform: scale(0.96) translateY(8px);
       }
       to {
         opacity: 1;
-        transform: translateX(0);
+        transform: scale(1) translateY(0);
       }
     }
 
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .modal-close {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--muted);
+      background: #f2f5fa;
+      cursor: pointer;
+    }
+
+    .qr-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 280px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fafcff;
+    }
+
+    .qr-container img {
+      width: 240px;
+      height: 240px;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .qr-url {
+      margin-top: 13px;
+      padding: 10px;
+      border-radius: 10px;
+      color: var(--muted);
+      background: #f5f7fb;
+      font-size: 10px;
+      text-align: center;
+      word-break: break-all;
+    }
+
+    /* ================================
+       Toast
+    ================================ */
+
+    .toast-container {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      pointer-events: none;
+    }
+
+    .toast {
+      min-width: 250px;
+      max-width: 360px;
+      padding: 13px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 15px 40px rgba(20, 44, 90, 0.15);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 600;
+      animation: toastIn 0.25s ease;
+      pointer-events: auto;
+    }
+
+    .toast.success i {
+      color: var(--success);
+    }
+
+    .toast.error i {
+      color: var(--danger);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ================================
+       Dark mode
+    ================================ */
+
+    body.dark {
+      --ink: #eef4ff;
+      --muted: #9ba8c0;
+      --line: #27344d;
+      --bg: #0b1220;
+      --surface: rgba(18, 28, 47, 0.88);
+      --surface-solid: #121c2f;
+
+      background:
+        radial-gradient(circle at 50% -10%, rgba(0, 82, 255, 0.17), transparent 38%),
+        linear-gradient(180deg, #0c1525 0%, #080f1c 100%);
+    }
+
+    body.dark header {
+      background: rgba(10, 18, 32, 0.78);
+      border-color: rgba(50, 66, 94, 0.65);
+    }
+
+    body.dark .brand-sub {
+      color: #8d9ab1;
+    }
+
+    body.dark .icon-button:hover {
+      background: rgba(65, 115, 220, 0.12);
+    }
+
+    body.dark .eyebrow {
+      border-color: #263758;
+      background: rgba(20, 32, 53, 0.72);
+    }
+
+    body.dark .shortener-card {
+      border-color: #263550;
+      background: rgba(17, 27, 45, 0.88);
+    }
+
+    body.dark .url-input,
+    body.dark .custom-input {
+      color: var(--ink);
+      background: #0f192a;
+      border-color: #2a3852;
+    }
+
+    body.dark .url-input:focus,
+    body.dark .custom-input:focus {
+      background: #111d31;
+    }
+
+    body.dark .custom-section {
+      border-color: #263550;
+      background: #101a2c;
+    }
+
+    body.dark .result-card {
+      border-color: #29416e;
+      background: linear-gradient(145deg, #10203b, #0d1a30);
+    }
+
+    body.dark .result-url-box {
+      border-color: #293b59;
+      background: #101a2c;
+    }
+
+    body.dark .result-button {
+      color: var(--ink);
+      background: #1b2940;
+    }
+
+    body.dark .result-button:hover {
+      background: #23334e;
+    }
+
+    body.dark .info-card {
+      border-color: #263550;
+      background: rgba(17, 27, 45, 0.7);
+    }
+
+    body.dark footer {
+      border-color: #24324a;
+    }
+
+    body.dark .modal {
+      background: #121c2f;
+    }
+
+    body.dark .modal-close,
+    body.dark .qr-url {
+      background: #1b2940;
+    }
+
+    body.dark .qr-container {
+      border-color: #293a55;
+      background: #0d1727;
+    }
+
+    body.dark .toast {
+      border-color: #293a55;
+      background: #17243a;
+    }
+
+    /* ================================
+       Responsive
+    ================================ */
+
     @media (max-width: 700px) {
-      .page-shell {
-        width: min(100% - 20px, 1180px);
+      header {
+        height: 64px;
       }
 
-      .nav-inner {
-        min-height: 66px;
+      .header-inner {
+        width: min(100% - 24px, 1120px);
       }
 
       .brand-sub {
         display: none;
       }
 
-      .account-btn span.label {
-        display: none;
+      main {
+        width: min(100% - 24px, 1120px);
+        padding: 52px 0 65px;
       }
 
       .hero {
-        padding: 48px 0 24px;
+        margin-bottom: 30px;
       }
 
       .hero h1 {
-        font-size: 43px;
+        font-size: clamp(36px, 12vw, 52px);
       }
 
       .hero p {
         font-size: 13px;
-        line-height: 1.75;
       }
 
-      .url-row {
+      .shortener-card {
+        padding: 7px;
+        border-radius: 22px;
+      }
+
+      .input-area {
+        padding: 19px 17px 10px;
+      }
+
+      .action-area {
+        padding: 8px 9px 9px;
+      }
+
+      .custom-section {
+        padding: 13px;
+      }
+
+      .info-grid {
         grid-template-columns: 1fr;
       }
 
-      .primary-btn {
+      .result-card {
+        padding: 17px;
+      }
+
+      .result-url-box {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .result-url {
+        padding: 9px 8px 3px;
+        text-align: center;
+      }
+
+      .result-actions {
         width: 100%;
       }
 
-      .section-grid {
-        grid-template-columns: 1fr;
+      .result-button {
+        flex: 1;
       }
 
-      .stat-card {
-        padding: 15px;
+      .result-meta {
+        flex-direction: column;
+        align-items: flex-start;
       }
 
-      .history-item {
-        grid-template-columns: minmax(0,1fr) auto;
+      footer {
+        width: calc(100% - 24px);
+        flex-direction: column;
+        align-items: flex-start;
       }
 
-      .history-meta {
-        grid-column: 1 / -1;
+      .toast-container {
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
       }
 
-      .history-item .delete-btn {
-        grid-column: 2;
-        grid-row: 1;
-      }
-
-      .history-header {
-        padding: 15px;
-      }
-
-      .history-item {
-        padding: 15px;
+      .toast {
+        width: 100%;
+        min-width: 0;
       }
     }
   </style>
 </head>
 
 <body>
+  <div class="page">
 
-  <!-- NAVIGATION -->
-  <nav class="nav">
-    <div class="page-shell nav-inner">
+    <header>
+      <div class="header-inner">
+        <a class="brand" href="./">
+          <span class="brand-mark">N</span>
+          <span class="brand-name">NoppoLI</span>
+          <span class="brand-sub">URL SHORTENER</span>
+        </a>
 
-      <a class="brand" href="/">
-        <div class="brand-mark">N</div>
-
-        <div class="brand-text">
-          <div class="brand-name">NoppoLI</div>
-          <div class="brand-sub">Link Intelligence</div>
+        <div class="header-right">
+          <button
+            class="icon-button"
+            id="themeButton"
+            type="button"
+            aria-label="テーマ切替"
+          >
+            <i data-lucide="moon" id="themeIcon"></i>
+          </button>
         </div>
-      </a>
-
-      <div class="nav-actions">
-
-        <button
-          class="icon-btn"
-          id="themeBtn"
-          title="テーマ切替"
-          aria-label="テーマ切替"
-        >
-          ☼
-        </button>
-
-        <button
-          class="account-btn"
-          id="accountBtn"
-        >
-          <span class="account-dot" id="accountDot"></span>
-          <span class="label" id="accountLabel">Noppo IDでログイン</span>
-        </button>
-
       </div>
-    </div>
-  </nav>
+    </header>
 
+    <main>
 
-  <main>
-
-    <!-- HERO -->
-    <section class="hero">
-      <div class="page-shell">
-
+      <section class="hero">
         <div class="eyebrow">
-          <span class="eyebrow-dot"></span>
+          <i data-lucide="link-2" width="13" height="13"></i>
           NoppoStudio
         </div>
 
@@ -1029,382 +1017,267 @@
         </h1>
 
         <p>
-          NoppoLIは、必要なときにすぐ使えるシンプルなURL短縮サービス。
-          Noppo IDと連携すれば、作成したリンクをいつでも管理できます。
+          URLを入力するだけで、シンプルな短縮URLを作成できます。
+          好きなキーワードを指定することもできます。
         </p>
+      </section>
 
+      <section class="shortener-card">
 
-        <!-- WORKSPACE -->
-        <div class="workspace">
+        <div class="input-area">
 
-          <div class="glass shortener-card">
+          <div class="field-label">
+            <span>短縮したいURL</span>
+            <span>HTTPS推奨</span>
+          </div>
 
-            <div class="url-row">
+          <div class="input-wrap">
+            <i
+              class="input-icon"
+              data-lucide="globe-2"
+              width="19"
+              height="19"
+            ></i>
 
-              <div class="url-input-wrap">
-                <input
-                  id="urlInput"
-                  class="url-input"
-                  type="url"
-                  autocomplete="url"
-                  placeholder="https://example.com/very/long/url..."
-                  aria-label="短縮するURL"
-                >
-              </div>
+            <input
+              id="urlInput"
+              class="url-input"
+              type="url"
+              autocomplete="url"
+              placeholder="https://example.com/very/long/url..."
+              spellcheck="false"
+            >
+          </div>
 
-              <button
-                id="shortenBtn"
-                class="primary-btn"
-              >
-                URLを短縮
-              </button>
-
-            </div>
-
-
-            <div class="advanced-row">
-
-              <div class="advanced-label">
-                <span>カスタム短縮ID</span>
-                <button
-                  class="toggle"
-                  id="customToggle"
-                  type="button"
-                  aria-label="カスタム短縮ID"
-                ></button>
-              </div>
-
-              <div
-                id="modeLabel"
-                style="
-                  color:#91a0b4;
-                  font-size:10px;
-                  font-weight:700;
-                "
-              >
-                ランダム生成
-              </div>
-
-            </div>
-
+          <div class="custom-section">
 
             <div
-              class="custom-panel"
-              id="customPanel"
+              class="custom-toggle"
+              id="customToggle"
+              role="button"
+              tabindex="0"
             >
-              <label for="customId">
-                好きな短縮ID
-              </label>
+              <div class="custom-toggle-left">
+                <div class="toggle-icon">
+                  <i data-lucide="pencil" width="16" height="16"></i>
+                </div>
 
+                <div>
+                  <div class="custom-title">
+                    好きなキーワードを使う
+                  </div>
+
+                  <div class="custom-description">
+                    短縮URLの末尾を自由に指定できます
+                  </div>
+                </div>
+              </div>
+
+              <div class="switch" id="customSwitch"></div>
+            </div>
+
+            <div class="custom-input-area" id="customInputArea">
               <input
-                id="customId"
+                id="customInput"
                 class="custom-input"
                 type="text"
                 maxlength="20"
-                placeholder="my-link"
+                placeholder="例：my-page"
                 autocomplete="off"
+                spellcheck="false"
               >
 
-              <div class="custom-hint">
-                英数字・ハイフン・アンダースコアを使用できます。最大20文字。
+              <div class="custom-help">
+                英数字・ハイフン・アンダースコアが使えます（最大20文字）
               </div>
             </div>
 
-
-            <div
-              class="login-required"
-              id="loginRequired"
-            >
-              カスタム短縮IDを使用するにはNoppo IDでログインしてください。
-            </div>
-
-
-            <div
-              class="firebase-warning"
-              id="firebaseWarning"
-            ></div>
-
-
-            <!-- RESULT -->
-            <div
-              class="result-wrap"
-              id="resultWrap"
-            >
-
-              <div class="result-card">
-
-                <div class="result-top">
-
-                  <div style="min-width:0;">
-                    <div class="result-label">
-                      Short URL
-                    </div>
-
-                    <div
-                      class="result-url"
-                      id="resultUrl"
-                    ></div>
-
-                    <div
-                      class="result-original"
-                      id="resultOriginal"
-                    ></div>
-                  </div>
-
-                </div>
-
-
-                <div class="result-actions">
-
-                  <button
-                    class="soft-btn primary-soft"
-                    id="copyResultBtn"
-                  >
-                    コピー
-                  </button>
-
-                  <button
-                    class="soft-btn"
-                    id="qrResultBtn"
-                  >
-                    QRコード
-                  </button>
-
-                  <button
-                    class="soft-btn"
-                    id="openResultBtn"
-                  >
-                    開く
-                  </button>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <!-- STATS -->
-          <div class="section-grid">
-
-            <div class="glass stat-card">
-              <div class="stat-label">Mode</div>
-              <div class="stat-value" id="modeStat">Guest</div>
-              <div class="stat-description">
-                現在の利用モード
-              </div>
-            </div>
-
-            <div class="glass stat-card">
-              <div class="stat-label">Links</div>
-              <div class="stat-value" id="linksStat">0</div>
-              <div class="stat-description">
-                あなたのリンク
-              </div>
-            </div>
-
-            <div class="glass stat-card">
-              <div class="stat-label">Clicks</div>
-              <div class="stat-value" id="clicksStat">0</div>
-              <div class="stat-description">
-                累計クリック
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-
-    <!-- HISTORY -->
-    <section class="history-section page-shell">
-
-      <div class="section-heading">
-
-        <div>
-          <div class="section-title">
-            リンク履歴
-          </div>
-
-          <div class="section-caption">
-            作成した短縮URLをここから管理できます。
           </div>
         </div>
 
-      </div>
-
-
-      <div class="glass history-card">
-
-        <div class="history-header">
-
-          <div
-            style="
-              color:#5d6c84;
-              font-size:11px;
-              font-weight:800;
-            "
+        <div class="action-area">
+          <button
+            class="shorten-button"
+            id="shortenButton"
+            type="button"
           >
-            Recent Links
-          </div>
-
-          <div
-            class="history-status"
-            id="historyStatus"
-          >
-            ゲスト
-          </div>
-
+            <i data-lucide="scissors" width="18" height="18"></i>
+            <span>短縮URLを作成</span>
+          </button>
         </div>
 
+      </section>
 
-        <div
-          class="history-list"
-          id="historyList"
-        >
+      <section class="result-card" id="resultCard">
 
-          <div class="empty" id="emptyState">
-
-            <div class="empty-icon">
-              ↗
-            </div>
-
-            <div class="empty-title">
-              まだリンクがありません
-            </div>
-
-            <div class="empty-text">
-              上のフォームからURLを短縮すると、ここに表示されます。
-            </div>
-
+        <div class="result-heading">
+          <div class="result-check">
+            <i data-lucide="check" width="16" height="16"></i>
           </div>
 
+          <span>短縮URLを作成しました</span>
         </div>
 
-      </div>
+        <div class="result-url-box">
 
-    </section>
+          <div class="result-url" id="resultUrl">
+            —
+          </div>
 
-  </main>
+          <div class="result-actions">
 
+            <button
+              class="result-button"
+              id="copyButton"
+              type="button"
+            >
+              <i data-lucide="copy" width="14" height="14"></i>
+              コピー
+            </button>
 
-  <footer class="footer">
-    <div class="page-shell">
-      <strong>NoppoLI</strong>
-      · NoppoStudio
-      <br>
-      Fast links. Simple by design.
-    </div>
-  </footer>
+            <button
+              class="result-button"
+              id="qrButton"
+              type="button"
+            >
+              <i data-lucide="qr-code" width="14" height="14"></i>
+              QR
+            </button>
 
+            <button
+              class="result-button primary"
+              id="openButton"
+              type="button"
+            >
+              <i data-lucide="external-link" width="14" height="14"></i>
+              開く
+            </button>
 
-  <!-- QR MODAL -->
-  <div
-    class="modal-backdrop"
-    id="qrModal"
-  >
+          </div>
+        </div>
 
-    <div class="modal">
+        <div class="result-meta">
+          <span id="resultOriginal">—</span>
+          <span>有効期限：作成から1か月</span>
+        </div>
 
-      <div class="modal-head">
+      </section>
 
-        <div class="modal-title">
+      <section class="info-grid">
+
+        <div class="info-card">
+          <div class="info-icon">
+            <i data-lucide="zap" width="16" height="16"></i>
+          </div>
+
+          <h3>すぐに短縮</h3>
+
+          <p>
+            URLを入力してボタンを押すだけ。
+            面倒な設定は必要ありません。
+          </p>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <i data-lucide="at-sign" width="16" height="16"></i>
+          </div>
+
+          <h3>好きなキーワード</h3>
+
+          <p>
+            短縮URLの末尾に好きな文字列を指定できます。
+          </p>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">
+            <i data-lucide="qr-code" width="16" height="16"></i>
+          </div>
+
+          <h3>QRコード</h3>
+
+          <p>
+            作成した短縮URLからQRコードもすぐに表示できます。
+          </p>
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer>
+      <span>© NoppoStudio</span>
+      <span>NoppoLI</span>
+    </footer>
+
+  </div>
+
+  <!-- QR Modal -->
+  <div class="modal-overlay" id="qrModal">
+
+    <div
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="qrModalTitle"
+    >
+
+      <div class="modal-header">
+        <div class="modal-title" id="qrModalTitle">
           QRコード
         </div>
 
         <button
           class="modal-close"
           id="qrClose"
+          type="button"
           aria-label="閉じる"
         >
-          ×
+          <i data-lucide="x" width="16" height="16"></i>
         </button>
-
       </div>
 
-      <div class="qr-box">
+      <div class="qr-container">
         <img
           id="qrImage"
+          src=""
           alt="短縮URLのQRコード"
         >
       </div>
 
-      <div
-        class="qr-url"
-        id="qrUrl"
-      ></div>
+      <div class="qr-url" id="qrUrl">
+        —
+      </div>
 
     </div>
-
   </div>
 
+  <div class="toast-container" id="toastContainer"></div>
 
-  <!-- TOAST -->
-  <div
-    class="toast-container"
-    id="toastContainer"
-  ></div>
-
-
+  <!-- Firebase -->
   <script type="module">
 
-    /*
-     * ============================================================
-     * NoppoLI
-     * ============================================================
-     *
-     * Authentication:
-     *   Noppo ID / OAuth 2.0 + PKCE
-     *
-     * Firebase:
-     *   Anonymous Auth -> Firestore access
-     *
-     * Identity:
-     *   Noppo ID account.id -> authorUid
-     *
-     * Old NoppoAuth / Supabase / ticket:
-     *   NOT USED
-     *
-     * ============================================================
-     */
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
-
-    /* =========================================================
-       FIREBASE
-       ========================================================= */
-
-    import {
-      initializeApp
-    } from
-      "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-
-    import {
-      getAuth,
-      signInAnonymously
-    } from
-      "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+    import { getAuth, signInAnonymously }
+      from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
     import {
       getFirestore,
-      collection,
-      query,
-      where,
-      orderBy,
-      onSnapshot,
-      addDoc,
-      getDocs,
-      deleteDoc,
       doc,
+      getDoc,
+      setDoc,
       updateDoc,
-      increment,
-      serverTimestamp
-    } from
-      "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+      deleteDoc,
+      increment
+    } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
+
+    /* ============================================================
+       Firebase
+    ============================================================ */
 
     const firebaseConfig = {
       apiKey: "AIzaSyB2HcI-TwH88QDADp-Z5cUFRCsaVO2VMw0",
@@ -1416,227 +1289,149 @@
       measurementId: "G-XBZK0F3NSH"
     };
 
-
-    let firebaseApp = null;
-    let firebaseAuth = null;
-    let db = null;
-
-    let firebaseReady = false;
-    let firebaseAnonymousUser = null;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
 
-    try {
-
-      firebaseApp = initializeApp(firebaseConfig);
-
-      firebaseAuth = getAuth(firebaseApp);
-
-      db = getFirestore(firebaseApp);
-
-      firebaseReady = true;
-
-      console.log(
-        "[NoppoLI] Firebase initialized."
-      );
-
-    } catch (error) {
-
-      console.error(
-        "[NoppoLI] Firebase initialization failed:",
-        error
-      );
-
-      showFirebaseWarning(
-        "Firebaseの初期化に失敗しました。Firebase Configを確認してください。"
-      );
-    }
-
-
-    async function initializeFirebaseAuth() {
-
-      if (!firebaseReady) {
-        return false;
-      }
-
-      try {
-
-        const result =
-          await signInAnonymously(firebaseAuth);
-
-        firebaseAnonymousUser =
-          result.user;
-
-        console.log(
-          "[NoppoLI] Firebase Anonymous Auth:",
-          firebaseAnonymousUser.uid
-        );
-
-        return true;
-
-      } catch (error) {
-
-        console.error(
-          "[NoppoLI] Anonymous Auth failed:",
-          error
-        );
-
-        showFirebaseWarning(
-          "Firebase Anonymous Authに失敗しました。Firebase ConsoleでAnonymous Authenticationが有効になっているか確認してください。"
-        );
-
-        return false;
-      }
-    }
-
-
-    /* =========================================================
-       CONSTANTS
-       ========================================================= */
+    /* ============================================================
+       NoppoLI
+    ============================================================ */
 
     const APP_ID = "noppo_li_v2";
+    const LINKS_COLLECTION = `artifacts/${APP_ID}/links`;
 
-    const NOPPO_ID_WORKER =
-      "https://noppo-id.noppo5319.workers.dev";
+    const SERVICE_ORIGIN = window.location.origin;
+    const CURRENT_PAGE = window.location.pathname;
 
-    const NOPPO_ID_FRONTEND =
-      "https://id-noppo.pages.dev";
-
-    const REDIRECT_URI =
-      "https://linp.f5.si/";
-
-    const LINKS_COLLECTION =
-      `artifacts/${APP_ID}/links`;
-
-    const GUEST_KEY =
-      "noppo_li_guest_id";
-
-    const SESSION_KEY =
-      "noppo_li_noppo_session";
-
-    const STATE_KEY =
-      "noppo_li_oauth_state";
-
-    const VERIFIER_KEY =
-      "noppo_li_oauth_verifier";
-
-    const THEME_KEY =
-      "noppo_li_theme";
+    const LINK_TTL_MS =
+      30 * 24 * 60 * 60 * 1000;
 
 
-    /* =========================================================
-       STATE
-       ========================================================= */
-
-    let noppoAccount = null;
-
-    let currentLinks = [];
-
-    let currentResultUrl = "";
-
-    let currentResultOriginal = "";
-
-    let unsubscribeHistory = null;
-
-    let customMode = false;
-
-
-    /* =========================================================
-       DOM
-       ========================================================= */
-
-    const $ = id =>
-      document.getElementById(id);
+    /* ============================================================
+       Elements
+    ============================================================ */
 
     const urlInput =
-      $("urlInput");
+      document.getElementById("urlInput");
 
     const customToggle =
-      $("customToggle");
+      document.getElementById("customToggle");
 
-    const customPanel =
-      $("customPanel");
+    const customSwitch =
+      document.getElementById("customSwitch");
 
-    const customId =
-      $("customId");
+    const customInputArea =
+      document.getElementById("customInputArea");
 
-    const shortenBtn =
-      $("shortenBtn");
+    const customInput =
+      document.getElementById("customInput");
 
-    const accountBtn =
-      $("accountBtn");
+    const shortenButton =
+      document.getElementById("shortenButton");
 
-    const accountLabel =
-      $("accountLabel");
-
-    const accountDot =
-      $("accountDot");
-
-    const resultWrap =
-      $("resultWrap");
+    const resultCard =
+      document.getElementById("resultCard");
 
     const resultUrl =
-      $("resultUrl");
+      document.getElementById("resultUrl");
 
     const resultOriginal =
-      $("resultOriginal");
+      document.getElementById("resultOriginal");
 
-    const copyResultBtn =
-      $("copyResultBtn");
+    const copyButton =
+      document.getElementById("copyButton");
 
-    const qrResultBtn =
-      $("qrResultBtn");
+    const qrButton =
+      document.getElementById("qrButton");
 
-    const openResultBtn =
-      $("openResultBtn");
-
-    const historyList =
-      $("historyList");
-
-    const emptyState =
-      $("emptyState");
-
-    const modeStat =
-      $("modeStat");
-
-    const linksStat =
-      $("linksStat");
-
-    const clicksStat =
-      $("clicksStat");
-
-    const historyStatus =
-      $("historyStatus");
-
-    const loginRequired =
-      $("loginRequired");
-
-    const firebaseWarning =
-      $("firebaseWarning");
+    const openButton =
+      document.getElementById("openButton");
 
     const qrModal =
-      $("qrModal");
-
-    const qrImage =
-      $("qrImage");
-
-    const qrUrl =
-      $("qrUrl");
+      document.getElementById("qrModal");
 
     const qrClose =
-      $("qrClose");
+      document.getElementById("qrClose");
+
+    const qrImage =
+      document.getElementById("qrImage");
+
+    const qrUrl =
+      document.getElementById("qrUrl");
+
+    const themeButton =
+      document.getElementById("themeButton");
+
+    const themeIcon =
+      document.getElementById("themeIcon");
 
     const toastContainer =
-      $("toastContainer");
-
-    const themeBtn =
-      $("themeBtn");
+      document.getElementById("toastContainer");
 
 
-    /* =========================================================
-       HELPERS
-       ========================================================= */
+    /* ============================================================
+       State
+    ============================================================ */
 
-    function escapeHTML(value) {
+    let anonymousUser = null;
+    let customEnabled = false;
+    let currentShortUrl = "";
+    let currentShortId = "";
+
+
+    /* ============================================================
+       Icons
+    ============================================================ */
+
+    lucide.createIcons();
+
+
+    /* ============================================================
+       Toast
+    ============================================================ */
+
+    function showToast(message, type = "success") {
+
+      const toast =
+        document.createElement("div");
+
+      toast.className =
+        `toast ${type}`;
+
+      const iconName =
+        type === "error"
+          ? "circle-alert"
+          : "check-circle-2";
+
+      toast.innerHTML = `
+        <i data-lucide="${iconName}" width="16" height="16"></i>
+        <span>${escapeHtml(message)}</span>
+      `;
+
+      toastContainer.appendChild(toast);
+
+      lucide.createIcons({
+        nodes: [toast]
+      });
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(5px)";
+
+        setTimeout(() => {
+          toast.remove();
+        }, 200);
+
+      }, 3000);
+    }
+
+
+    /* ============================================================
+       Escape
+    ============================================================ */
+
+    function escapeHtml(value) {
 
       return String(value)
         .replaceAll("&", "&amp;")
@@ -1647,135 +1442,84 @@
     }
 
 
-    function showToast(
-      message,
-      type = ""
-    ) {
+    /* ============================================================
+       Anonymous Firebase Auth
+    ============================================================ */
 
-      const toast =
-        document.createElement("div");
+    async function ensureAnonymousAuth() {
 
-      toast.className =
-        `toast ${type}`;
-
-      toast.textContent =
-        message;
-
-      toastContainer.appendChild(
-        toast
-      );
-
-      setTimeout(() => {
-
-        toast.style.opacity = "0";
-        toast.style.transform =
-          "translateX(20px)";
-
-        setTimeout(
-          () => toast.remove(),
-          250
-        );
-
-      }, 2800);
-    }
-
-
-    function showFirebaseWarning(message) {
-
-      if (!firebaseWarning) {
-        return;
+      if (auth.currentUser) {
+        anonymousUser = auth.currentUser;
+        return anonymousUser;
       }
 
-      firebaseWarning.textContent =
-        message;
+      const result =
+        await signInAnonymously(auth);
 
-      firebaseWarning.classList.add(
-        "visible"
-      );
+      anonymousUser = result.user;
+
+      return anonymousUser;
     }
 
+
+    /* ============================================================
+       URL validation
+    ============================================================ */
 
     function normalizeUrl(value) {
 
-      let url =
+      const raw =
         value.trim();
 
-      if (!url) {
-        return null;
+      if (!raw) {
+        throw new Error("URLを入力してください。");
+      }
+
+      let parsed;
+
+      try {
+        parsed = new URL(raw);
+      } catch {
+        throw new Error("正しいURLを入力してください。");
       }
 
       if (
-        !/^https?:\/\//i.test(url)
+        parsed.protocol !== "http:" &&
+        parsed.protocol !== "https:"
       ) {
-        url =
-          "https://" + url;
-      }
-
-      try {
-
-        const parsed =
-          new URL(url);
-
-        if (
-          parsed.protocol !== "http:" &&
-          parsed.protocol !== "https:"
-        ) {
-          return null;
-        }
-
-        return parsed.href;
-
-      } catch {
-
-        return null;
-      }
-    }
-
-
-    function generateShortId() {
-
-      const chars =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-      let result = "";
-
-      const random =
-        new Uint32Array(8);
-
-      crypto.getRandomValues(random);
-
-      for (
-        let i = 0;
-        i < 8;
-        i++
-      ) {
-
-        result +=
-          chars[
-            random[i] % chars.length
-          ];
-      }
-
-      return result;
-    }
-
-
-    function getGuestId() {
-
-      let id =
-        localStorage.getItem(
-          GUEST_KEY
+        throw new Error(
+          "http:// または https:// のURLを入力してください。"
         );
+      }
+
+      return parsed.toString();
+    }
+
+
+    /* ============================================================
+       Custom ID validation
+    ============================================================ */
+
+    function validateCustomId(value) {
+
+      const id =
+        value.trim();
 
       if (!id) {
+        throw new Error(
+          "キーワードを入力してください。"
+        );
+      }
 
-        id =
-          "guest_" +
-          crypto.randomUUID();
+      if (id.length > 20) {
+        throw new Error(
+          "キーワードは20文字以内で入力してください。"
+        );
+      }
 
-        localStorage.setItem(
-          GUEST_KEY,
-          id
+      if (!/^[A-Za-z0-9_-]+$/.test(id)) {
+        throw new Error(
+          "キーワードには英数字・ハイフン・アンダースコアのみ使用できます。"
         );
       }
 
@@ -1783,1122 +1527,699 @@
     }
 
 
-    function getAuthorUid() {
+    /* ============================================================
+       Random ID
+    ============================================================ */
 
-      if (
-        noppoAccount &&
-        noppoAccount.id
-      ) {
-        return noppoAccount.id;
-      }
-
-      return getGuestId();
-    }
-
-
-    function isLoggedIn() {
-
-      return Boolean(
-        noppoAccount &&
-        noppoAccount.id
-      );
-    }
-
-
-    function formatDate(value) {
-
-      if (!value) {
-        return "—";
-      }
-
-      let date;
-
-      if (
-        typeof value.toDate ===
-        "function"
-      ) {
-        date = value.toDate();
-      } else {
-        date = new Date(value);
-      }
-
-      if (
-        Number.isNaN(
-          date.getTime()
-        )
-      ) {
-        return "—";
-      }
-
-      return new Intl.DateTimeFormat(
-        "ja-JP",
-        {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit"
-        }
-      ).format(date);
-    }
-
-
-    function formatRelativeDate(value) {
-
-      if (!value) {
-        return "—";
-      }
-
-      let date;
-
-      if (
-        typeof value.toDate ===
-        "function"
-      ) {
-        date = value.toDate();
-      } else {
-        date = new Date(value);
-      }
-
-      const diff =
-        date.getTime() -
-        Date.now();
-
-      const days =
-        Math.ceil(
-          diff / 86400000
-        );
-
-      if (days <= 0) {
-        return "期限切れ";
-      }
-
-      if (days === 1) {
-        return "あと1日";
-      }
-
-      if (days < 30) {
-        return `あと${days}日`;
-      }
-
-      return formatDate(value);
-    }
-
-
-    /* =========================================================
-       THEME
-       ========================================================= */
-
-    function loadTheme() {
-
-      const saved =
-        localStorage.getItem(
-          THEME_KEY
-        );
-
-      if (saved === "dark") {
-        document.documentElement
-          .classList.add("dark");
-      }
-    }
-
-    loadTheme();
-
-
-    themeBtn.addEventListener(
-      "click",
-      () => {
-
-        const dark =
-          document.documentElement
-            .classList.toggle("dark");
-
-        localStorage.setItem(
-          THEME_KEY,
-          dark ? "dark" : "light"
-        );
-
-        showToast(
-          dark
-            ? "ダークモードにしました"
-            : "ライトモードにしました"
-        );
-      }
-    );
-
-
-    /*
-     * Dark mode is intentionally lightweight.
-     * The base service remains light-first.
-     */
-
-    const darkStyle =
-      document.createElement("style");
-
-    darkStyle.textContent = `
-      .dark body {
-        --ink:#edf3ff;
-        --muted:#94a3b8;
-        --line:#263652;
-        --surface:#111c31;
-        --surface-soft:#162238;
-        --bg:#091221;
-        background:
-          radial-gradient(
-            circle at 10% 0%,
-            rgba(0,64,224,.17),
-            transparent 28%
-          ),
-          #091221;
-      }
-
-      .dark .nav {
-        background:rgba(9,18,33,.76);
-        border-bottom-color:#1e2d47;
-      }
-
-      .dark .glass,
-      .dark .shortener-card,
-      .dark .result-card,
-      .dark .modal {
-        background:rgba(17,28,49,.90);
-        border-color:#263652;
-      }
-
-      .dark .url-input,
-      .dark .custom-input,
-      .dark .soft-btn,
-      .dark .icon-btn,
-      .dark .account-btn,
-      .dark .delete-btn {
-        background:#111c31;
-        color:#edf3ff;
-        border-color:#2a3b59;
-      }
-
-      .dark .url-input::placeholder {
-        color:#64748b;
-      }
-
-      .dark .custom-panel {
-        background:#0e192b;
-        border-color:#263652;
-      }
-
-      .dark .history-item:hover {
-        background:#101c30;
-      }
-
-      .dark .history-item {
-        border-bottom-color:#1e2d47;
-      }
-
-      .dark .history-status {
-        background:#1b2940;
-        color:#9caac0;
-      }
-
-      .dark .history-status.logged {
-        background:#0d3327;
-        color:#65d9aa;
-      }
-
-      .dark .empty-icon {
-        background:#15274b;
-      }
-
-      .dark .modal-close {
-        background:#1c2a41;
-        color:#9aa9bf;
-      }
-
-      .dark .toast {
-        background:#111c31;
-        color:#dce6f7;
-        border-color:#2a3b59;
-      }
-
-      .dark .footer,
-      .dark .section-caption,
-      .dark .hero p {
-        color:#7f8fa9;
-      }
-    `;
-
-    document.head.appendChild(
-      darkStyle
-    );
-
-
-    /* =========================================================
-       NOPPO ID OAuth
-       ========================================================= */
-
-    function base64UrlEncode(
-      arrayBuffer
-    ) {
-
-      const bytes =
-        new Uint8Array(
-          arrayBuffer
-        );
-
-      let binary = "";
-
-      for (
-        const byte of bytes
-      ) {
-        binary +=
-          String.fromCharCode(byte);
-      }
-
-      return btoa(binary)
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "");
-    }
-
-
-    function randomString(
-      length = 64
-    ) {
+    function generateShortId(length = 7) {
 
       const chars =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+        "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-      const values =
+      const array =
         new Uint32Array(length);
 
-      crypto.getRandomValues(
-        values
-      );
+      crypto.getRandomValues(array);
 
-      return Array.from(
-        values,
-        value =>
-          chars[
-            value % chars.length
-          ]
-      ).join("");
+      let result = "";
+
+      for (let i = 0; i < length; i++) {
+        result +=
+          chars[array[i] % chars.length];
+      }
+
+      return result;
     }
 
 
-    async function sha256(
-      text
-    ) {
+    /* ============================================================
+       Firestore document
+    ============================================================ */
 
-      const data =
-        new TextEncoder()
-          .encode(text);
+    function linkRef(shortId) {
 
-      return crypto.subtle.digest(
-        "SHA-256",
-        data
+      return doc(
+        db,
+        LINKS_COLLECTION,
+        shortId
       );
     }
 
 
-    async function createCodeChallenge(
-      verifier
-    ) {
+    /* ============================================================
+       ID availability
+    ============================================================ */
 
-      const digest =
-        await sha256(
-          verifier
+    async function isAvailable(shortId) {
+
+      const snapshot =
+        await getDoc(linkRef(shortId));
+
+      return !snapshot.exists();
+    }
+
+
+    /* ============================================================
+       Create random unique ID
+    ============================================================ */
+
+    async function createRandomShortId() {
+
+      for (let i = 0; i < 12; i++) {
+
+        const candidate =
+          generateShortId();
+
+        if (
+          await isAvailable(candidate)
+        ) {
+          return candidate;
+        }
+      }
+
+      throw new Error(
+        "短縮URLの生成に失敗しました。もう一度お試しください。"
+      );
+    }
+
+
+    /* ============================================================
+       Save link
+    ============================================================ */
+
+    async function saveLink(shortId, longUrl) {
+
+      const createdAt =
+        new Date();
+
+      const expiresAt =
+        new Date(
+          createdAt.getTime() +
+          LINK_TTL_MS
         );
 
-      return base64UrlEncode(
-        digest
-      );
-    }
+      const reference =
+        linkRef(shortId);
 
+      const existing =
+        await getDoc(reference);
 
-    async function registerNoppoLI() {
-
-      const response =
-        await fetch(
-          `${NOPPO_ID_WORKER}/oauth/register`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-            body: JSON.stringify({
-              clientName:
-                "NoppoLI",
-              redirectUris: [
-                REDIRECT_URI
-              ]
-            })
-          }
-        );
-
-      if (!response.ok) {
-
+      if (existing.exists()) {
         throw new Error(
-          "Noppo IDサービス登録に失敗しました"
+          "そのキーワードはすでに使用されています。"
         );
       }
 
-      return response.json();
+      await setDoc(reference, {
+
+        shortId,
+
+        longUrl,
+
+        clicks: 0,
+
+        isGuest: true,
+
+        createdAt,
+
+        expiresAt
+
+      });
+
+      return {
+        shortId,
+        createdAt,
+        expiresAt
+      };
     }
 
 
-    async function startNoppoLogin() {
+    /* ============================================================
+       Create short URL
+    ============================================================ */
 
-      try {
+    async function shortenUrl() {
 
-        await registerNoppoLI();
-
-        const state =
-          randomString(48);
-
-        const verifier =
-          randomString(64);
-
-        const challenge =
-          await createCodeChallenge(
-            verifier
-          );
-
-        localStorage.setItem(
-          STATE_KEY,
-          state
+      const longUrl =
+        normalizeUrl(
+          urlInput.value
         );
 
-        localStorage.setItem(
-          VERIFIER_KEY,
-          verifier
-        );
+      let shortId;
 
+      if (customEnabled) {
 
-        const response =
-          await fetch(
-            `${NOPPO_ID_WORKER}/authorize/start`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-              body: JSON.stringify({
-                redirectUri:
-                  REDIRECT_URI,
-                state,
-                codeChallenge:
-                  challenge,
-                codeChallengeMethod:
-                  "S256"
-              })
-            }
+        shortId =
+          validateCustomId(
+            customInput.value
           );
 
+      } else {
 
-        const data =
-          await response.json();
+        shortId =
+          await createRandomShortId();
 
-
-        if (
-          !response.ok ||
-          !data.ok
-        ) {
-
-          throw new Error(
-            data.message ||
-            "Noppo ID認証を開始できませんでした"
-          );
-        }
-
-
-        const authorizationSessionId =
-          data.authorizationSessionId;
-
-
-        if (
-          !authorizationSessionId
-        ) {
-          throw new Error(
-            "authorizationSessionIdがありません"
-          );
-        }
-
-
-        const target =
-          new URL(
-            NOPPO_ID_FRONTEND
-          );
-
-        target.searchParams.set(
-          "authorizationSessionId",
-          authorizationSessionId
-        );
-
-
-        window.location.href =
-          target.toString();
-
-      } catch (error) {
-
-        console.error(
-          "[NoppoLI] Login error:",
-          error
-        );
-
-        showToast(
-          error.message ||
-          "Noppo IDへの接続に失敗しました",
-          "error"
-        );
       }
+
+      const saved =
+        await saveLink(
+          shortId,
+          longUrl
+        );
+
+      return saved;
     }
 
 
-    async function handleOAuthCallback() {
+    /* ============================================================
+       Create service URL
+    ============================================================ */
+
+    function makeShortUrl(shortId) {
+
+      const base =
+        SERVICE_ORIGIN +
+        CURRENT_PAGE;
+
+      const separator =
+        base.includes("?")
+          ? "&"
+          : "?";
+
+      return `${base}${separator}i=${encodeURIComponent(shortId)}`;
+    }
+
+
+    /* ============================================================
+       Resolve short URL
+    ============================================================ */
+
+    async function resolveShortUrl() {
 
       const params =
         new URLSearchParams(
           window.location.search
         );
 
-      const code =
-        params.get("code");
+      const shortId =
+        params.get("i");
 
-      const returnedState =
-        params.get("state");
-
-      if (!code) {
-        return false;
+      if (!shortId) {
+        return;
       }
-
-
-      const savedState =
-        localStorage.getItem(
-          STATE_KEY
-        );
-
-      const verifier =
-        localStorage.getItem(
-          VERIFIER_KEY
-        );
-
-
-      if (
-        !savedState ||
-        !verifier ||
-        !returnedState ||
-        returnedState !== savedState
-      ) {
-
-        showToast(
-          "OAuth stateの検証に失敗しました",
-          "error"
-        );
-
-        return false;
-      }
-
 
       try {
 
-        const response =
-          await fetch(
-            `${NOPPO_ID_WORKER}/token`,
+        const snapshot =
+          await getDoc(
+            linkRef(shortId)
+          );
+
+        if (!snapshot.exists()) {
+
+          showResolveError(
+            "この短縮URLは存在しません。"
+          );
+
+          return;
+        }
+
+        const data =
+          snapshot.data();
+
+        const expiresAt =
+          data.expiresAt?.toDate
+            ? data.expiresAt.toDate()
+            : new Date(data.expiresAt);
+
+        if (
+          expiresAt &&
+          Date.now() > expiresAt.getTime()
+        ) {
+
+          try {
+            await deleteDoc(
+              linkRef(shortId)
+            );
+          } catch {
+            // 削除できなくてもリダイレクトはしない
+          }
+
+          showResolveError(
+            "この短縮URLの有効期限が切れています。"
+          );
+
+          return;
+        }
+
+        if (!data.longUrl) {
+
+          showResolveError(
+            "リンク情報が壊れている可能性があります。"
+          );
+
+          return;
+        }
+
+        try {
+
+          await updateDoc(
+            linkRef(shortId),
             {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-              body: JSON.stringify({
-                redirectUri:
-                  REDIRECT_URI,
-                code,
-                codeVerifier:
-                  verifier
-              })
+              clicks: increment(1)
             }
           );
 
-
-        const data =
-          await response.json();
-
-
-        if (
-          !response.ok ||
-          !data.ok ||
-          !data.account
-        ) {
-
-          throw new Error(
-            data.message ||
-            "Noppo IDトークン交換に失敗しました"
-          );
+        } catch {
+          // クリック数更新に失敗してもリダイレクトは継続
         }
 
-
-        noppoAccount = {
-          id:
-            data.account.id,
-          username:
-            data.account.username
-        };
-
-
-        localStorage.setItem(
-          SESSION_KEY,
-          JSON.stringify(
-            noppoAccount
-          )
+        window.location.replace(
+          data.longUrl
         );
-
-
-        localStorage.removeItem(
-          STATE_KEY
-        );
-
-        localStorage.removeItem(
-          VERIFIER_KEY
-        );
-
-
-        /*
-         * Remove OAuth parameters
-         * from browser address bar.
-         */
-
-        window.history.replaceState(
-          {},
-          document.title,
-          REDIRECT_URI
-        );
-
-
-        updateAccountUI();
-
-        subscribeHistory();
-
-        showToast(
-          `Noppo IDでログインしました`,
-          "success"
-        );
-
-        return true;
 
       } catch (error) {
 
         console.error(
-          "[NoppoLI] OAuth callback error:",
+          "Short URL resolution error:",
           error
         );
 
-        showToast(
-          error.message ||
-          "ログイン処理に失敗しました",
-          "error"
+        showResolveError(
+          "短縮URLの読み込みに失敗しました。"
         );
-
-        return false;
       }
     }
 
 
-    function restoreNoppoSession() {
+    /* ============================================================
+       Resolve error
+    ============================================================ */
+
+    function showResolveError(message) {
+
+      document.body.innerHTML = `
+        <div style="
+          min-height:100vh;
+          display:grid;
+          place-items:center;
+          padding:24px;
+          background:#f4f8ff;
+          color:#07152f;
+          font-family:
+            'Plus Jakarta Sans',
+            'Noto Sans JP',
+            sans-serif;
+        ">
+          <div style="
+            width:min(430px,100%);
+            padding:34px;
+            border:1px solid #dce5f5;
+            border-radius:24px;
+            background:#fff;
+            box-shadow:0 20px 60px rgba(27,58,115,.10);
+            text-align:center;
+          ">
+            <div style="
+              width:52px;
+              height:52px;
+              margin:0 auto 18px;
+              display:grid;
+              place-items:center;
+              border-radius:16px;
+              color:#d83b4b;
+              background:#fff0f2;
+              font-size:22px;
+              font-weight:800;
+            ">
+              !
+            </div>
+
+            <h1 style="
+              margin:0 0 10px;
+              font-size:20px;
+            ">
+              NoppoLI
+            </h1>
+
+            <p style="
+              margin:0;
+              color:#66738d;
+              font-size:13px;
+              line-height:1.7;
+            ">
+              ${escapeHtml(message)}
+            </p>
+
+            <a
+              href="${escapeHtml(
+                SERVICE_ORIGIN + CURRENT_PAGE
+              )}"
+              style="
+                display:inline-flex;
+                align-items:center;
+                justify-content:center;
+                height:44px;
+                margin-top:22px;
+                padding:0 20px;
+                border-radius:12px;
+                color:white;
+                background:#0040e0;
+                font-size:12px;
+                font-weight:700;
+                text-decoration:none;
+              "
+            >
+              NoppoLIへ戻る
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+
+    /* ============================================================
+       Loading
+    ============================================================ */
+
+    function setLoading(loading) {
+
+      shortenButton.disabled =
+        loading;
+
+      if (loading) {
+
+        shortenButton.innerHTML = `
+          <span class="spinner"></span>
+          <span>作成しています...</span>
+        `;
+
+      } else {
+
+        shortenButton.innerHTML = `
+          <i data-lucide="scissors" width="18" height="18"></i>
+          <span>短縮URLを作成</span>
+        `;
+
+        lucide.createIcons({
+          nodes: [shortenButton]
+        });
+      }
+    }
+
+
+    /* ============================================================
+       Show result
+    ============================================================ */
+
+    function showResult(
+      shortId,
+      longUrl
+    ) {
+
+      currentShortId =
+        shortId;
+
+      currentShortUrl =
+        makeShortUrl(shortId);
+
+      resultUrl.textContent =
+        currentShortUrl;
+
+      resultOriginal.textContent =
+        longUrl;
+
+      resultCard.classList.add("show");
+
+      resultCard.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+
+
+    /* ============================================================
+       Clipboard
+    ============================================================ */
+
+    async function copyCurrentUrl() {
+
+      if (!currentShortUrl) {
+        return;
+      }
 
       try {
 
-        const raw =
-          localStorage.getItem(
-            SESSION_KEY
+        await navigator.clipboard.writeText(
+          currentShortUrl
+        );
+
+        showToast(
+          "短縮URLをコピーしました。"
+        );
+
+      } catch {
+
+        const textarea =
+          document.createElement("textarea");
+
+        textarea.value =
+          currentShortUrl;
+
+        textarea.style.position =
+          "fixed";
+
+        textarea.style.opacity =
+          "0";
+
+        document.body.appendChild(
+          textarea
+        );
+
+        textarea.select();
+
+        try {
+          document.execCommand("copy");
+
+          showToast(
+            "短縮URLをコピーしました。"
           );
 
-        if (!raw) {
-          return;
+        } catch {
+
+          showToast(
+            "コピーに失敗しました。",
+            "error"
+          );
         }
 
-        const parsed =
-          JSON.parse(raw);
-
-        if (
-          parsed &&
-          parsed.id
-        ) {
-
-          noppoAccount =
-            parsed;
-        }
-
-      } catch (error) {
-
-        console.warn(
-          "[NoppoLI] Session restore failed:",
-          error
-        );
-
-        localStorage.removeItem(
-          SESSION_KEY
-        );
+        textarea.remove();
       }
     }
 
 
-    function logoutNoppo() {
+    /* ============================================================
+       QR
+    ============================================================ */
 
-      noppoAccount = null;
+    function openQrModal() {
 
-      localStorage.removeItem(
-        SESSION_KEY
-      );
-
-      if (unsubscribeHistory) {
-
-        unsubscribeHistory();
-
-        unsubscribeHistory = null;
+      if (!currentShortUrl) {
+        return;
       }
 
-      updateAccountUI();
+      const encoded =
+        encodeURIComponent(
+          currentShortUrl
+        );
 
-      renderHistory([]);
+      qrImage.src =
+        `https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=12&data=${encoded}`;
 
-      showToast(
-        "ログアウトしました"
-      );
+      qrUrl.textContent =
+        currentShortUrl;
+
+      qrModal.classList.add("show");
     }
 
 
-    /* =========================================================
-       ACCOUNT UI
-       ========================================================= */
+    function closeQrModal() {
 
-    function updateAccountUI() {
+      qrModal.classList.remove("show");
+    }
 
-      const logged =
-        isLoggedIn();
 
-      if (logged) {
+    /* ============================================================
+       Custom toggle
+    ============================================================ */
 
-        accountDot.classList.add(
-          "online"
+    function toggleCustom() {
+
+      customEnabled =
+        !customEnabled;
+
+      customSwitch.classList.toggle(
+        "active",
+        customEnabled
+      );
+
+      customInputArea.classList.toggle(
+        "show",
+        customEnabled
+      );
+
+      if (customEnabled) {
+        setTimeout(() => {
+          customInput.focus();
+        }, 50);
+      }
+    }
+
+
+    /* ============================================================
+       Theme
+    ============================================================ */
+
+    function loadTheme() {
+
+      const saved =
+        localStorage.getItem(
+          "noppo-li-theme"
         );
 
-        accountLabel.textContent =
-          noppoAccount.username
-            ? noppoAccount.username
-            : "Noppo ID";
+      if (saved === "dark") {
 
-        modeStat.textContent =
-          "Noppo ID";
-
-        historyStatus.textContent =
-          "Noppo ID";
-
-        historyStatus.classList.add(
-          "logged"
+        document.body.classList.add(
+          "dark"
         );
 
-        loginRequired.classList.remove(
-          "visible"
+        themeIcon.setAttribute(
+          "data-lucide",
+          "sun"
         );
 
       } else {
 
-        accountDot.classList.remove(
-          "online"
-        );
-
-        accountLabel.textContent =
-          "Noppo IDでログイン";
-
-        modeStat.textContent =
-          "Guest";
-
-        historyStatus.textContent =
-          "ゲスト";
-
-        historyStatus.classList.remove(
-          "logged"
+        themeIcon.setAttribute(
+          "data-lucide",
+          "moon"
         );
       }
+
+      lucide.createIcons({
+        nodes: [themeButton]
+      });
     }
 
 
-    accountBtn.addEventListener(
-      "click",
-      async () => {
+    function toggleTheme() {
 
-        if (isLoggedIn()) {
+      const dark =
+        document.body.classList.toggle(
+          "dark"
+        );
 
-          const shouldLogout =
-            confirm(
-              `${noppoAccount.username || "Noppo ID"} からログアウトしますか？`
-            );
+      localStorage.setItem(
+        "noppo-li-theme",
+        dark ? "dark" : "light"
+      );
 
-          if (shouldLogout) {
-            logoutNoppo();
-          }
+      themeIcon.setAttribute(
+        "data-lucide",
+        dark ? "sun" : "moon"
+      );
 
-          return;
-        }
-
-        await startNoppoLogin();
-      }
-    );
+      lucide.createIcons({
+        nodes: [themeButton]
+      });
+    }
 
 
-    /* =========================================================
-       CUSTOM MODE
-       ========================================================= */
+    /* ============================================================
+       Events
+    ============================================================ */
 
     customToggle.addEventListener(
       "click",
-      () => {
+      toggleCustom
+    );
 
-        customMode =
-          !customMode;
+    customToggle.addEventListener(
+      "keydown",
+      event => {
 
-        customToggle.classList.toggle(
-          "active",
-          customMode
-        );
+        if (
+          event.key === "Enter" ||
+          event.key === " "
+        ) {
 
-        customPanel.classList.toggle(
-          "visible",
-          customMode
-        );
+          event.preventDefault();
 
-        if (customMode) {
-
-          $("modeLabel").textContent =
-            "カスタムID";
-
-          if (!isLoggedIn()) {
-
-            loginRequired.classList.add(
-              "visible"
-            );
-
-          }
-
-        } else {
-
-          $("modeLabel").textContent =
-            "ランダム生成";
-
-          loginRequired.classList.remove(
-            "visible"
-          );
+          toggleCustom();
         }
       }
     );
 
 
-    /* =========================================================
-       FIRESTORE
-       ========================================================= */
-
-    async function customIdExists(
-      shortId
-    ) {
-
-      const linksRef =
-        collection(
-          db,
-          LINKS_COLLECTION
-        );
-
-      const q =
-        query(
-          linksRef,
-          where(
-            "shortId",
-            "==",
-            shortId
-          )
-        );
-
-      const snapshot =
-        await getDocs(q);
-
-      return !snapshot.empty;
-    }
-
-
-    async function createLink() {
-
-      if (!firebaseReady) {
-
-        showToast(
-          "Firebaseが初期化されていません",
-          "error"
-        );
-
-        return;
-      }
-
-
-      if (!firebaseAnonymousUser) {
-
-        const ok =
-          await initializeFirebaseAuth();
-
-        if (!ok) {
-          return;
-        }
-      }
-
-
-      const normalized =
-        normalizeUrl(
-          urlInput.value
-        );
-
-
-      if (!normalized) {
-
-        showToast(
-          "有効なURLを入力してください",
-          "error"
-        );
-
-        urlInput.focus();
-
-        return;
-      }
-
-
-      if (
-        customMode &&
-        !isLoggedIn()
-      ) {
-
-        loginRequired.classList.add(
-          "visible"
-        );
-
-        showToast(
-          "カスタム短縮IDにはNoppo IDログインが必要です",
-          "error"
-        );
-
-        return;
-      }
-
-
-      shortenBtn.disabled =
-        true;
-
-      shortenBtn.classList.add(
-        "loading"
-      );
-
-
-      try {
-
-        let shortId;
-
-
-        if (customMode) {
-
-          shortId =
-            customId.value
-              .trim()
-              .replace(
-                /[^a-zA-Z0-9_-]/g,
-                ""
-              );
-
-
-          if (
-            !shortId ||
-            shortId.length > 20
-          ) {
-
-            throw new Error(
-              "短縮IDは1〜20文字で指定してください"
-            );
-          }
-
-
-          if (
-            await customIdExists(
-              shortId
-            )
-          ) {
-
-            throw new Error(
-              "その短縮IDはすでに使用されています"
-            );
-          }
-
-        } else {
-
-          /*
-           * Random IDs are generated
-           * and checked for collisions.
-           */
-
-          for (
-            let attempt = 0;
-            attempt < 5;
-            attempt++
-          ) {
-
-            const candidate =
-              generateShortId();
-
-            const exists =
-              await customIdExists(
-                candidate
-              );
-
-            if (!exists) {
-
-              shortId =
-                candidate;
-
-              break;
-            }
-          }
-
-
-          if (!shortId) {
-
-            throw new Error(
-              "短縮IDの生成に失敗しました。もう一度お試しください。"
-            );
-          }
-        }
-
-
-        const now =
-          new Date();
-
-        const isGuest =
-          !isLoggedIn();
-
-
-        /*
-         * Guest links expire after 1 month.
-         * Logged-in links do not expire automatically.
-         */
-
-        const expiresAt =
-          isGuest
-            ? new Date(
-                now.getTime() +
-                30 * 24 * 60 * 60 * 1000
-              )
-            : null;
-
-
-        const linkData = {
-          shortId,
-          longUrl:
-            normalized,
-
-          /*
-           * IMPORTANT:
-           * This is Noppo ID account.id
-           * for authenticated users.
-           *
-           * Firebase Anonymous UID is NOT
-           * used as authorUid.
-           */
-          authorUid:
-            getAuthorUid(),
-
-          clicks: 0,
-
-          isGuest,
-
-          expiresAt,
-
-          createdAt:
-            serverTimestamp()
-        };
-
-
-        await addDoc(
-          collection(
-            db,
-            LINKS_COLLECTION
-          ),
-          linkData
-        );
-
-
-        const shortUrl =
-          `${window.location.origin}/?i=${encodeURIComponent(shortId)}`;
-
-
-        currentResultUrl =
-          shortUrl;
-
-        currentResultOriginal =
-          normalized;
-
-
-        resultUrl.textContent =
-          shortUrl;
-
-        resultOriginal.textContent =
-          normalized;
-
-        resultWrap.classList.add(
-          "visible"
-        );
-
-
-        urlInput.value = "";
-
-        customId.value = "";
-
-
-        showToast(
-          "短縮URLを作成しました",
-          "success"
-        );
-
-
-        /*
-         * Guest history is based on local guest ID.
-         * Noppo ID history is live-subscribed.
-         */
-
-        if (!isLoggedIn()) {
-
-          loadGuestHistory();
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "[NoppoLI] Create link error:",
-          error
-        );
-
-        showToast(
-          error.message ||
-          "URLの作成に失敗しました",
-          "error"
-        );
-
-      } finally {
-
-        shortenBtn.disabled =
-          false;
-
-        shortenBtn.classList.remove(
-          "loading"
-        );
-      }
-    }
-
-
-    shortenBtn.addEventListener(
+    shortenButton.addEventListener(
       "click",
-      createLink
+      async () => {
+
+        try {
+
+          setLoading(true);
+
+          await ensureAnonymousAuth();
+
+          const normalizedUrl =
+            normalizeUrl(
+              urlInput.value
+            );
+
+          let shortId;
+
+          if (customEnabled) {
+
+            shortId =
+              validateCustomId(
+                customInput.value
+              );
+
+          } else {
+
+            shortId =
+              await createRandomShortId();
+          }
+
+          await saveLink(
+            shortId,
+            normalizedUrl
+          );
+
+          showResult(
+            shortId,
+            normalizedUrl
+          );
+
+          showToast(
+            "短縮URLを作成しました。"
+          );
+
+        } catch (error) {
+
+          console.error(error);
+
+          showToast(
+            error?.message ||
+            "短縮URLの作成に失敗しました。",
+            "error"
+          );
+
+        } finally {
+
+          setLoading(false);
+        }
+      }
     );
 
 
@@ -2912,667 +2233,63 @@
 
           event.preventDefault();
 
-          createLink();
+          shortenButton.click();
         }
       }
     );
 
 
-    /* =========================================================
-       HISTORY
-       ========================================================= */
-
-    function subscribeHistory() {
-
-      if (!firebaseReady) {
-        return;
-      }
-
-      if (unsubscribeHistory) {
-
-        unsubscribeHistory();
-
-        unsubscribeHistory = null;
-      }
-
-
-      if (!isLoggedIn()) {
-
-        loadGuestHistory();
-
-        return;
-      }
-
-
-      const linksRef =
-        collection(
-          db,
-          LINKS_COLLECTION
-        );
-
-
-      /*
-       * We intentionally use the Noppo ID UUID
-       * as the logical authorUid.
-       */
-
-      const q =
-        query(
-          linksRef,
-          where(
-            "authorUid",
-            "==",
-            noppoAccount.id
-          )
-        );
-
-
-      unsubscribeHistory =
-        onSnapshot(
-          q,
-          snapshot => {
-
-            const links =
-              snapshot.docs
-                .map(
-                  docSnap => ({
-                    id:
-                      docSnap.id,
-                    ...docSnap.data()
-                  })
-                )
-                .sort(
-                  (a,b) => {
-                    const aTime =
-                      a.createdAt?.toMillis?.() ||
-                      0;
-
-                    const bTime =
-                      b.createdAt?.toMillis?.() ||
-                      0;
-
-                    return bTime - aTime;
-                  }
-                );
-
-            currentLinks =
-              links;
-
-            renderHistory(
-              links
-            );
-
-          },
-          error => {
-
-            console.error(
-              "[NoppoLI] History listener:",
-              error
-            );
-
-            showToast(
-              "履歴の取得に失敗しました",
-              "error"
-            );
-          }
-        );
-    }
-
-
-    async function loadGuestHistory() {
-
-      if (!firebaseReady) {
-        return;
-      }
-
-      if (!firebaseAnonymousUser) {
-        return;
-      }
-
-
-      try {
-
-        const linksRef =
-          collection(
-            db,
-            LINKS_COLLECTION
-          );
-
-
-        const q =
-          query(
-            linksRef,
-            where(
-              "authorUid",
-              "==",
-              getGuestId()
-            )
-          );
-
-
-        const snapshot =
-          await getDocs(q);
-
-
-        const links =
-          snapshot.docs
-            .map(
-              docSnap => ({
-                id:
-                  docSnap.id,
-                ...docSnap.data()
-              })
-            )
-            .sort(
-              (a,b) => {
-
-                const aTime =
-                  a.createdAt?.toMillis?.() ||
-                  0;
-
-                const bTime =
-                  b.createdAt?.toMillis?.() ||
-                  0;
-
-                return bTime - aTime;
-              }
-            );
-
-
-        currentLinks =
-          links;
-
-        renderHistory(
-          links
-        );
-
-      } catch (error) {
-
-        console.error(
-          "[NoppoLI] Guest history:",
-          error
-        );
-      }
-    }
-
-
-    function renderHistory(
-      links
-    ) {
-
-      linksStat.textContent =
-        links.length.toLocaleString(
-          "ja-JP"
-        );
-
-
-      const clicks =
-        links.reduce(
-          (
-            total,
-            link
-          ) =>
-            total +
-            Number(
-              link.clicks || 0
-            ),
-          0
-        );
-
-
-      clicksStat.textContent =
-        clicks.toLocaleString(
-          "ja-JP"
-        );
-
-
-      if (!links.length) {
-
-        historyList.innerHTML = "";
-
-        historyList.appendChild(
-          emptyState
-        );
-
-        return;
-      }
-
-
-      historyList.innerHTML = "";
-
-
-      for (
-        const link of links
-      ) {
-
-        const item =
-          document.createElement(
-            "div"
-          );
-
-        item.className =
-          "history-item";
-
-
-        const shortUrl =
-          `${window.location.origin}/?i=${encodeURIComponent(link.shortId)}`;
-
-
-        const main =
-          document.createElement(
-            "div"
-          );
-
-        main.className =
-          "history-main";
-
-
-        const short =
-          document.createElement(
-            "div"
-          );
-
-        short.className =
-          "history-short";
-
-        short.textContent =
-          shortUrl;
-
-
-        const long =
-          document.createElement(
-            "div"
-          );
-
-        long.className =
-          "history-long";
-
-        long.textContent =
-          link.longUrl;
-
-
-        main.appendChild(
-          short
-        );
-
-        main.appendChild(
-          long
-        );
-
-
-        const meta =
-          document.createElement(
-            "div"
-          );
-
-        meta.className =
-          "history-meta";
-
-
-        const clicksMeta =
-          document.createElement(
-            "span"
-          );
-
-        clicksMeta.textContent =
-          `↗ ${Number(link.clicks || 0)}`;
-
-
-        const expiry =
-          document.createElement(
-            "span"
-          );
-
-        expiry.textContent =
-          link.isGuest
-            ? formatRelativeDate(
-                link.expiresAt
-              )
-            : "無期限";
-
-
-        const date =
-          document.createElement(
-            "span"
-          );
-
-        date.textContent =
-          formatDate(
-            link.createdAt
-          );
-
-
-        meta.appendChild(
-          clicksMeta
-        );
-
-        meta.appendChild(
-          expiry
-        );
-
-        meta.appendChild(
-          date
-        );
-
-
-        const deleteButton =
-          document.createElement(
-            "button"
-          );
-
-        deleteButton.className =
-          "delete-btn";
-
-        deleteButton.title =
-          "削除";
-
-        deleteButton.textContent =
-          "×";
-
-
-        deleteButton.addEventListener(
-          "click",
-          () => deleteLink(link)
-        );
-
-
-        item.appendChild(
-          main
-        );
-
-        item.appendChild(
-          meta
-        );
-
-        item.appendChild(
-          deleteButton
-        );
-
-
-        historyList.appendChild(
-          item
-        );
-      }
-    }
-
-
-    async function deleteLink(
-      link
-    ) {
-
-      const confirmed =
-        confirm(
-          `「${link.shortId}」を削除しますか？`
-        );
-
-      if (!confirmed) {
-        return;
-      }
-
-
-      try {
-
-        await deleteDoc(
-          doc(
-            db,
-            LINKS_COLLECTION,
-            link.id
-          )
-        );
-
-
-        showToast(
-          "リンクを削除しました",
-          "success"
-        );
-
-
-        if (!isLoggedIn()) {
-          loadGuestHistory();
-        }
-
-      } catch (error) {
-
-        console.error(
-          "[NoppoLI] Delete error:",
-          error
-        );
-
-        showToast(
-          "リンクの削除に失敗しました",
-          "error"
-        );
-      }
-    }
-
-
-    /* =========================================================
-       LINK RESOLUTION
-       ========================================================= */
-
-    async function resolveShortLink() {
-
-      const params =
-        new URLSearchParams(
-          window.location.search
-        );
-
-      const shortId =
-        params.get("i");
-
-      if (!shortId) {
-        return false;
-      }
-
-
-      if (!firebaseReady) {
-        return false;
-      }
-
-
-      if (!firebaseAnonymousUser) {
-
-        const ok =
-          await initializeFirebaseAuth();
-
-        if (!ok) {
-          return false;
-        }
-      }
-
-
-      try {
-
-        const linksRef =
-          collection(
-            db,
-            LINKS_COLLECTION
-          );
-
-
-        const q =
-          query(
-            linksRef,
-            where(
-              "shortId",
-              "==",
-              shortId
-            )
-          );
-
-
-        const snapshot =
-          await getDocs(q);
-
-
-        if (snapshot.empty) {
-
-          showToast(
-            "リンクが見つかりません",
-            "error"
-          );
-
-          return false;
-        }
-
-
-        const docSnap =
-          snapshot.docs[0];
-
-        const link =
-          docSnap.data();
-
+    customInput.addEventListener(
+      "keydown",
+      event => {
 
         if (
-          link.expiresAt
+          event.key === "Enter"
         ) {
 
-          const expires =
-            link.expiresAt.toDate
-              ? link.expiresAt.toDate()
-              : new Date(
-                  link.expiresAt
-                );
+          event.preventDefault();
 
-
-          if (
-            expires.getTime() <
-            Date.now()
-          ) {
-
-            await deleteDoc(
-              doc(
-                db,
-                LINKS_COLLECTION,
-                docSnap.id
-              )
-            );
-
-
-            showToast(
-              "このリンクは期限切れです",
-              "error"
-            );
-
-            return false;
-          }
+          shortenButton.click();
         }
-
-
-        /*
-         * Increment click count.
-         */
-
-        await updateDoc(
-          doc(
-            db,
-            LINKS_COLLECTION,
-            docSnap.id
-          ),
-          {
-            clicks:
-              increment(1)
-          }
-        );
-
-
-        if (
-          /^https?:\/\//i.test(
-            link.longUrl
-          )
-        ) {
-
-          window.location.replace(
-            link.longUrl
-          );
-
-          return true;
-        }
-
-
-        showToast(
-          "リンク先URLが不正です",
-          "error"
-        );
-
-        return false;
-
-      } catch (error) {
-
-        console.error(
-          "[NoppoLI] Resolve error:",
-          error
-        );
-
-        showToast(
-          "リンクの読み込みに失敗しました",
-          "error"
-        );
-
-        return false;
       }
-    }
+    );
 
 
-    /* =========================================================
-       RESULT ACTIONS
-       ========================================================= */
+    customInput.addEventListener(
+      "input",
+      () => {
 
-    copyResultBtn.addEventListener(
+        customInput.value =
+          customInput.value.replace(
+            /[^A-Za-z0-9_-]/g,
+            ""
+          );
+      }
+    );
+
+
+    copyButton.addEventListener(
       "click",
-      async () => {
-
-        if (!currentResultUrl) {
-          return;
-        }
-
-        try {
-
-          await navigator.clipboard.writeText(
-            currentResultUrl
-          );
-
-          showToast(
-            "短縮URLをコピーしました",
-            "success"
-          );
-
-        } catch {
-
-          showToast(
-            "コピーできませんでした",
-            "error"
-          );
-        }
-      }
+      copyCurrentUrl
     );
 
 
-    qrResultBtn.addEventListener(
+    qrButton.addEventListener(
+      "click",
+      openQrModal
+    );
+
+
+    openButton.addEventListener(
       "click",
       () => {
 
-        if (!currentResultUrl) {
-          return;
-        }
-
-        openQR(
-          currentResultUrl
-        );
-      }
-    );
-
-
-    openResultBtn.addEventListener(
-      "click",
-      () => {
-
-        if (!currentResultUrl) {
+        if (!currentShortUrl) {
           return;
         }
 
         window.open(
-          currentResultUrl,
+          currentShortUrl,
           "_blank",
           "noopener,noreferrer"
         );
@@ -3580,31 +2297,9 @@
     );
 
 
-    function openQR(url) {
-
-      qrUrl.textContent =
-        url;
-
-      qrImage.src =
-        `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(url)}`;
-
-      qrModal.classList.add(
-        "visible"
-      );
-    }
-
-
-    function closeQR() {
-
-      qrModal.classList.remove(
-        "visible"
-      );
-    }
-
-
     qrClose.addEventListener(
       "click",
-      closeQR
+      closeQrModal
     );
 
 
@@ -3613,10 +2308,9 @@
       event => {
 
         if (
-          event.target ===
-          qrModal
+          event.target === qrModal
         ) {
-          closeQR();
+          closeQrModal();
         }
       }
     );
@@ -3627,72 +2321,79 @@
       event => {
 
         if (
-          event.key === "Escape"
+          event.key === "Escape" &&
+          qrModal.classList.contains("show")
         ) {
-          closeQR();
+          closeQrModal();
         }
       }
     );
 
 
-    /* =========================================================
-       STARTUP
-       ========================================================= */
-
-    async function boot() {
-
-      /*
-       * OAuth callback has to be handled first.
-       */
-
-      await handleOAuthCallback();
+    themeButton.addEventListener(
+      "click",
+      toggleTheme
+    );
 
 
-      restoreNoppoSession();
+    /* ============================================================
+       Initial boot
+    ============================================================ */
 
-      updateAccountUI();
+    loadTheme();
 
-
-      /*
-       * Firebase Anonymous Auth is independent
-       * from Noppo ID authentication.
-       */
-
-      await initializeFirebaseAuth();
-
+    /*
+     * ?i=xxxx が付いている場合は、
+     * NoppoLIの短縮URLとして処理する。
+     */
+    if (
+      new URLSearchParams(
+        window.location.search
+      ).has("i")
+    ) {
 
       /*
-       * If this URL is a short link,
-       * resolve it and stop normal UI flow.
+       * リダイレクト時だけ匿名認証を行う。
+       * Firestoreルールの request.auth != null
+       * を満たすため。
        */
+      ensureAnonymousAuth()
+        .then(() => {
+          resolveShortUrl();
+        })
+        .catch(error => {
 
-      const params =
-        new URLSearchParams(
-          window.location.search
-        );
+          console.error(
+            "Anonymous authentication failed:",
+            error
+          );
 
+          showResolveError(
+            "サービスへの接続に失敗しました。"
+          );
+        });
 
-      if (
-        params.has("i")
-      ) {
-
-        await resolveShortLink();
-
-        return;
-      }
-
+    } else {
 
       /*
-       * Normal NoppoLI UI.
+       * 通常のトップページでは、
+       * 初回アクセス時に匿名認証を準備。
        */
+      ensureAnonymousAuth()
+        .catch(error => {
 
-      subscribeHistory();
+          console.error(
+            "Anonymous authentication failed:",
+            error
+          );
+
+          showToast(
+            "サービスへの接続に失敗しました。Firebaseの設定を確認してください。",
+            "error"
+          );
+        });
     }
 
-
-    boot();
-
   </script>
-
 </body>
 </html>
